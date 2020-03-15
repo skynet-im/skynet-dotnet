@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A875207C-A6EC-419F-886A-3409225788E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Core", "src\Skynet.Core\Skynet.Core.csproj", "{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Protocol", "src\Skynet.Protocol\Skynet.Protocol.csproj", "{1F8C6415-E840-4027-8137-B83DC5BECA44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA} = {A875207C-A6EC-419F-886A-3409225788E9}
+		{1F8C6415-E840-4027-8137-B83DC5BECA44} = {A875207C-A6EC-419F-886A-3409225788E9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F9F5513-F674-476B-98D5-9A53847AA3A0}
+	EndGlobalSection
+EndGlobal
