@@ -1,6 +1,7 @@
 ﻿using Skynet.Model;
-using Skynet.Protocol.Model;
 using Skynet.Network;
+using Skynet.Protocol.Cryptography;
+using Skynet.Protocol.Model;
 using System;
 using System.Collections.Generic;
 
@@ -19,12 +20,35 @@ namespace Skynet.Protocol
         public ChannelMessageFile File { get; set; }
         public List<Dependency> Dependencies { get; set; } = new List<Dependency>();
 
-        public ReadOnlyMemory<byte> PacketContent { get; set; }
+        public ReadOnlyMemory<byte>? PacketContent { get; set; }
 
         public MessageFlags RequiredFlags { get; set; } = MessageFlags.None;
         public MessageFlags AllowedFlags { get; set; } = MessageFlags.All;
 
         public override Packet Create() => new ChannelMessage().Init(this);
+
+        public void Decrypt(ReadOnlySpan<byte> key)
+        {
+            if (key.Length != 64) throw new ArgumentOutOfRangeException(nameof(key), key.Length, "The key must be exactly 64 bytes long.");
+            if (PacketContent == null) throw new InvalidOperationException("You cannot decrypt a message that has not been read");
+
+            byte[] hmacKey = key.Slice(0, 32).ToArray();
+            byte[] aesKey = key.Slice(32, 32).ToArray();
+            ReadContent(AesStatic.EncryptWithHmac(PacketContent.Value, hmacKey, aesKey));
+            Array.Clear(hmacKey, 0, 32);
+            Array.Clear(aesKey, 0, 32);
+        }
+
+        public void Encrypt(ReadOnlySpan<byte> key)
+        {
+            if (key.Length != 64) throw new ArgumentOutOfRangeException(nameof(key), key.Length, "The key must be exactly 64 bytes long.");
+
+            byte[] hmacKey = key.Slice(0, 32).ToArray();
+            byte[] aesKey = key.Slice(32, 32).ToArray();
+            PacketContent = AesStatic.EncryptWithHmac(WriteContent(), hmacKey, aesKey);
+            Array.Clear(hmacKey, 0, 32);
+            Array.Clear(aesKey, 0, 32);
+        }
 
         protected sealed override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
@@ -41,14 +65,14 @@ namespace Skynet.Protocol
             MessageFlags = (MessageFlags)buffer.ReadByte();
             if (MessageFlags.HasFlag(MessageFlags.ExternalFile))
                 FileId = buffer.ReadInt64();
+
             PacketContent = buffer.ReadMediumByteArray();
+
             if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
             {
-                var contentBuffer = new PacketBuffer(PacketContent);
-                ReadMessage(contentBuffer);
-                if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
-                    File = new ChannelMessageFile(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
+                ReadContent(PacketContent.Value);
             }
+
             int length = buffer.ReadUInt16();
             for (int i = 0; i < length; i++)
             {
@@ -72,16 +96,16 @@ namespace Skynet.Protocol
             if (MessageFlags.HasFlag(MessageFlags.ExternalFile))
                 buffer.WriteInt64(FileId);
 
-            if (GetType() == typeof(ChannelMessage))
+            if (PacketContent == null)
             {
-                PacketBuffer contentBuffer = new PacketBuffer();
-                WriteMessage(contentBuffer);
-                if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
-                    File.Write(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
-                PacketContent = contentBuffer.GetBuffer();
+                if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
+                    PacketContent = WriteContent();
+                else
+                    throw new InvalidOperationException("A message without MessageFlags.Unencrypted has be encrypted before it can be written.");
             }
+            
+            buffer.WriteMediumByteArray(PacketContent.Value.Span);
 
-            buffer.WriteMediumByteArray(PacketContent.Span);
             buffer.WriteUInt16((ushort)Dependencies.Count);
             foreach (Dependency dependency in Dependencies)
             {
@@ -99,16 +123,24 @@ namespace Skynet.Protocol
             return this;
         }
 
-        protected virtual void ReadMessage(PacketBuffer buffer)
+        protected virtual void ReadMessage(PacketBuffer buffer) { }
+        protected virtual void WriteMessage(PacketBuffer buffer) { }
+
+        private void ReadContent(ReadOnlyMemory<byte> buffer)
         {
-            if (!Policies.HasFlag(PacketPolicies.ClientToServer))
-                throw new InvalidOperationException();
+            var contentBuffer = new PacketBuffer(buffer);
+            ReadMessage(contentBuffer);
+            if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
+                File = new ChannelMessageFile(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
         }
 
-        protected virtual void WriteMessage(PacketBuffer buffer)
+        private ReadOnlyMemory<byte> WriteContent()
         {
-            if (!Policies.HasFlag(PacketPolicies.ServerToClient))
-                throw new InvalidOperationException();
+            PacketBuffer contentBuffer = new PacketBuffer();
+            WriteMessage(contentBuffer);
+            if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
+                File.Write(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
+            return contentBuffer.GetBuffer();
         }
 
         public override string ToString()
