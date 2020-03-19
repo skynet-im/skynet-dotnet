@@ -1,0 +1,44 @@
+# Azure Pipelines configuration for Skynet .NET libraries
+
+trigger:
+  batch: false
+  branches:
+    include: ['master']
+
+pr:
+  autoCancel: true
+  branches:
+    include: ['*']
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  displayName: "Use .NET Core 3.1 SDK"
+  inputs:
+    packageType: sdk
+    version: 3.1.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+    feedsToUse: select
+    includeNuGetOrg: true
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '**/*Tests.csproj'
+    arguments: '--configuration $(buildConfiguration)'
