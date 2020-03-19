@@ -5,9 +5,13 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A875207C-A6EC-419F-886A-3409225788E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Core", "src\Skynet.Core\Skynet.Core.csproj", "{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skynet.Core", "src\Skynet.Core\Skynet.Core.csproj", "{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Protocol", "src\Skynet.Protocol\Skynet.Protocol.csproj", "{1F8C6415-E840-4027-8137-B83DC5BECA44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skynet.Protocol", "src\Skynet.Protocol\Skynet.Protocol.csproj", "{1F8C6415-E840-4027-8137-B83DC5BECA44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B4FD2640-4ECD-4396-80AB-BCD331922AA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skynet.Core.Tests", "tests\Skynet.Core.Tests\Skynet.Core.Tests.csproj", "{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +27,10 @@ Global
 		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F8C6415-E840-4027-8137-B83DC5BECA44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA} = {A875207C-A6EC-419F-886A-3409225788E9}
 		{1F8C6415-E840-4027-8137-B83DC5BECA44} = {A875207C-A6EC-419F-886A-3409225788E9}
+		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC} = {B4FD2640-4ECD-4396-80AB-BCD331922AA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0F9F5513-F674-476B-98D5-9A53847AA3A0}

@@ -10,7 +10,7 @@ namespace Skynet.Network
     /// <summary>
     /// Provides a reading and writing wrapper to reassemble packets with their ID from a segmented stream.
     /// </summary>
-    internal class PacketStream : IAsyncDisposable
+    public class PacketStream : IAsyncDisposable
     {
         private readonly Stream innerStream;
         private readonly bool leaveInnerStreamOpen;
