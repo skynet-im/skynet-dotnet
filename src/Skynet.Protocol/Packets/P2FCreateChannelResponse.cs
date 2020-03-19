@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x2F, PacketPolicies.Send)]
+    [Packet(0x2F, PacketPolicies.ServerToClient)]
     internal sealed class P2FCreateChannelResponse : Packet
     {
         public long TempChannelId { get; set; }
@@ -16,7 +16,15 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P2FCreateChannelResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            TempChannelId = buffer.ReadInt64();
+            StatusCode = (CreateChannelStatus)buffer.ReadByte();
+            ChannelId = buffer.ReadInt64();
+            CreationTime = buffer.ReadDateTime();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(TempChannelId);
             buffer.WriteByte((byte)StatusCode);

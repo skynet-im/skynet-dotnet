@@ -21,7 +21,7 @@ namespace Skynet.Protocol
             CreationTime = buffer.ReadDateTime();
             LastWriteTime = buffer.ReadDateTime();
             ThumbnailContentType = buffer.ReadShortString();
-            ThumbnailData = buffer.ReadByteArray();
+            ThumbnailData = buffer.ReadMediumByteArray();
 
             if (external)
             {
@@ -37,7 +37,7 @@ namespace Skynet.Protocol
             buffer.WriteDateTime(CreationTime);
             buffer.WriteDateTime(LastWriteTime);
             buffer.WriteShortString(ThumbnailContentType);
-            buffer.WriteByteArray(ThumbnailData.Span);
+            buffer.WriteMediumByteArray(ThumbnailData.Span);
 
             if (external)
             {

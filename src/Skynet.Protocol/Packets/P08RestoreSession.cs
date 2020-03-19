@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x08, PacketPolicies.Receive | PacketPolicies.Unauthenticated)]
+    [Packet(0x08, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated)]
     internal sealed class P08RestoreSession : Packet
     {
         public long SessionId { get; set; }
@@ -15,7 +15,7 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P08RestoreSession().Init(this);
 
-        public override void ReadPacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             SessionId = buffer.ReadInt64();
             SessionToken = buffer.ReadRawByteArray(32).ToArray();
@@ -23,6 +23,17 @@ namespace Skynet.Protocol.Packets
             for (int i = 0; i < length; i++)
             {
                 Channels.Add(buffer.ReadInt64());
+            }
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            buffer.WriteInt64(SessionId);
+            buffer.WriteRawByteArray(SessionToken);
+            buffer.WriteUInt16((ushort)Channels.Count);
+            foreach (long channelId in Channels)
+            {
+                buffer.WriteInt64(channelId);
             }
         }
 

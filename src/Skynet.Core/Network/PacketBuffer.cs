@@ -265,7 +265,7 @@ namespace Skynet.Network
             position += sizeof(byte) + array.Length;
         }
 
-        public ReadOnlyMemory<byte> ReadByteArray()
+        public ReadOnlyMemory<byte> ReadMediumByteArray()
         {
             if (Position + sizeof(ushort) > Capacity) throw new EndOfStreamException();
             ushort length = Unsafe.ReadUnaligned<ushort>(ref buffer.Span[Position]);
@@ -276,7 +276,7 @@ namespace Skynet.Network
             position += sizeof(ushort) + length;
             return value;
         }
-        public void WriteByteArray(ReadOnlySpan<byte> array)
+        public void WriteMediumByteArray(ReadOnlySpan<byte> array)
         {
             if (array.Length > ushort.MaxValue) throw new ArgumentOutOfRangeException(nameof(array));
 
@@ -328,17 +328,17 @@ namespace Skynet.Network
             WriteShortByteArray(buffer.Slice(0, bytesUsed));
         }
 
-        public string ReadString()
+        public string ReadMediumString()
         {
-            ReadOnlySpan<byte> buffer = ReadByteArray().Span;
+            ReadOnlySpan<byte> buffer = ReadMediumByteArray().Span;
             return encoding.GetString(buffer);
         }
-        public void WriteString(ReadOnlySpan<char> text)
+        public void WriteMediumString(ReadOnlySpan<char> text)
         {
             Span<byte> buffer = stackalloc byte[ushort.MaxValue];
             encoding.GetEncoder().Convert(text, buffer, true, out _, out int bytesUsed, out bool completed);
             if (!completed) throw new ArgumentOutOfRangeException(nameof(text));
-            WriteByteArray(buffer.Slice(0, bytesUsed));
+            WriteMediumByteArray(buffer.Slice(0, bytesUsed));
         }
 
         public string ReadLongString()

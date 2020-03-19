@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x07, PacketPolicies.Send)]
+    [Packet(0x07, PacketPolicies.ServerToClient)]
     internal sealed class P07CreateSessionResponse : Packet
     {
         public CreateSessionStatus StatusCode { get; set; }
@@ -17,13 +17,22 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P07CreateSessionResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            StatusCode = (CreateSessionStatus)buffer.ReadByte();
+            AccountId = buffer.ReadInt64();
+            SessionId = buffer.ReadInt64();
+            SessionToken = buffer.ReadRawByteArray(32).ToArray();
+            WebToken = buffer.ReadMediumString();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteByte((byte)StatusCode);
             buffer.WriteInt64(AccountId);
             buffer.WriteInt64(SessionId);
             buffer.WriteRawByteArray(SessionToken);
-            buffer.WriteString(WebToken);
+            buffer.WriteMediumString(WebToken);
         }
 
         public override string ToString()

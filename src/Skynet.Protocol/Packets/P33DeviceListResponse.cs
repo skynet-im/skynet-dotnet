@@ -6,14 +6,23 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x33, PacketPolicies.Send)]
+    [Packet(0x33, PacketPolicies.ServerToClient)]
     internal class P33DeviceListResponse : Packet
     {
         public List<SessionDetails> SessionDetails { get; set; } = new List<SessionDetails>();
 
         public override Packet Create() => new P33DeviceListResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            int count = buffer.ReadUInt16();
+            for (int i = 0; i < count; i++)
+            {
+                SessionDetails.Add(new SessionDetails(buffer.ReadInt64(), buffer.ReadDateTime(), buffer.ReadInt32()));
+            }
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteUInt16((ushort)SessionDetails.Count);
             foreach (SessionDetails details in SessionDetails)

@@ -6,9 +6,9 @@ namespace Skynet.Protocol
     public enum PacketPolicies
     {
         None = 0,
-        Receive = 1,
-        Send = 2,
-        Duplex = Receive | Send,
+        ClientToServer = 1,
+        ServerToClient = 2,
+        Duplex = ClientToServer | ServerToClient,
         Unauthenticated = 4,
         Uninitialized = 8
     }

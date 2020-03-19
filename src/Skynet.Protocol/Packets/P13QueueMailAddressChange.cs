@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x13, PacketPolicies.Receive)]
+    [Packet(0x13, PacketPolicies.ClientToServer)]
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
     internal sealed class P13QueueMailAddressChange : ChannelMessage
     {

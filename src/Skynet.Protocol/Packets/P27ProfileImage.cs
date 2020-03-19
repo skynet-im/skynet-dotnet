@@ -16,12 +16,12 @@ namespace Skynet.Protocol.Packets
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            Caption = buffer.ReadString();
+            Caption = buffer.ReadMediumString();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteString(Caption);
+            buffer.WriteMediumString(Caption);
         }
     }
 }

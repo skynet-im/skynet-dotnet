@@ -17,20 +17,28 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P0ACreateChannel().Init(this);
 
-        public override void ReadPacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             ChannelId = buffer.ReadInt64();
             ChannelType = (ChannelType)buffer.ReadByte();
+            if (role == PacketRole.Client)
+            {
+                OwnerId = buffer.ReadInt64();
+                CreationTime = buffer.ReadDateTime();
+            }
             if (ChannelType == ChannelType.Direct)
                 CounterpartId = buffer.ReadInt64();
         }
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(ChannelId);
             buffer.WriteByte((byte)ChannelType);
-            buffer.WriteInt64(OwnerId);
-            buffer.WriteDateTime(CreationTime);
+            if (role == PacketRole.Server)
+            {
+                buffer.WriteInt64(OwnerId);
+                buffer.WriteDateTime(CreationTime);
+            }
             if (ChannelType == ChannelType.Direct)
                 buffer.WriteInt64(CounterpartId);
         }

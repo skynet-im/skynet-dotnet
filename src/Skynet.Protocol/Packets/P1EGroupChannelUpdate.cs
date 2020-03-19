@@ -24,7 +24,7 @@ namespace Skynet.Protocol.Packets
             {
                 Members.Add((buffer.ReadInt64(), (GroupMemberFlags)buffer.ReadByte()));
             }
-            KeyHistory = buffer.ReadByteArray().ToArray();
+            KeyHistory = buffer.ReadMediumByteArray().ToArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
@@ -36,7 +36,7 @@ namespace Skynet.Protocol.Packets
                 buffer.WriteInt64(accountId);
                 buffer.WriteByte((byte)flags);
             }
-            buffer.WriteByteArray(KeyHistory);
+            buffer.WriteMediumByteArray(KeyHistory);
         }
     }
 }

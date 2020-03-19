@@ -21,17 +21,17 @@ namespace Skynet.Protocol.Packets
         protected override void ReadMessage(PacketBuffer buffer)
         {
             SignatureKeyFormat = (KeyFormat)buffer.ReadByte();
-            SignatureKey = buffer.ReadByteArray().ToArray();
+            SignatureKey = buffer.ReadMediumByteArray().ToArray();
             DerivationKeyFormat = (KeyFormat)buffer.ReadByte();
-            DerivationKey = buffer.ReadByteArray().ToArray();
+            DerivationKey = buffer.ReadMediumByteArray().ToArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
             buffer.WriteByte((byte)SignatureKeyFormat);
-            buffer.WriteByteArray(SignatureKey);
+            buffer.WriteMediumByteArray(SignatureKey);
             buffer.WriteByte((byte)DerivationKeyFormat);
-            buffer.WriteByteArray(DerivationKey);
+            buffer.WriteMediumByteArray(DerivationKey);
         }
     }
 }

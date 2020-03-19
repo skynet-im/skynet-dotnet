@@ -6,14 +6,19 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x03, PacketPolicies.Send)]
+    [Packet(0x03, PacketPolicies.ServerToClient)]
     internal sealed class P03CreateAccountResponse : Packet
     {
         public CreateAccountStatus StatusCode { get; set; }
 
         public override Packet Create() => new P03CreateAccountResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            StatusCode = (CreateAccountStatus)buffer.ReadByte();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteByte((byte)StatusCode);
         }

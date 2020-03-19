@@ -5,16 +5,21 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x04, PacketPolicies.Receive)]
+    [Packet(0x04, PacketPolicies.ClientToServer)]
     internal sealed class P04DeleteAccount : Packet
     {
         public byte[] KeyHash { get; set; }
 
         public override Packet Create() => new P04DeleteAccount().Init(this);
 
-        public override void ReadPacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             KeyHash = buffer.ReadRawByteArray(32).ToArray();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            buffer.WriteRawByteArray(KeyHash);
         }
     }
 }

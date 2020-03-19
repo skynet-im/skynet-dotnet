@@ -5,14 +5,19 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x0B, PacketPolicies.Send)]
+    [Packet(0x0B, PacketPolicies.ServerToClient)]
     internal class P0BSyncStarted : Packet
     {
         public int MinCount { get; set; }
 
         public override Packet Create() => new P0BSyncStarted().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            MinCount = buffer.ReadInt32();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt32(MinCount);   
         }

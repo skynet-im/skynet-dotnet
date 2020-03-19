@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x29, PacketPolicies.Send)]
+    [Packet(0x29, PacketPolicies.ServerToClient)]
     internal sealed class P29DeviceList : ChannelMessage
     {
         public List<SessionInformation> Sessions { get; set; } = new List<SessionInformation>();

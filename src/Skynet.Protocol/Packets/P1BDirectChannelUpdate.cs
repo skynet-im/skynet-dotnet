@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x1B, PacketPolicies.Send)]
+    [Packet(0x1B, PacketPolicies.ServerToClient)]
     internal sealed class P1BDirectChannelUpdate : ChannelMessage
     {
         public override Packet Create() => new P1BDirectChannelUpdate().Init(this);

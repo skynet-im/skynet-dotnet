@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x14, PacketPolicies.Send)]
+    [Packet(0x14, PacketPolicies.ServerToClient)]
     internal sealed class P14MailAddress : ChannelMessage
     {
         public string MailAddress { get; set; }

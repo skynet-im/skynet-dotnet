@@ -3,24 +3,37 @@ using System;
 
 namespace Skynet.Protocol
 {
-    internal abstract class Packet : IPacket
+    internal abstract class Packet
     {
         public byte Id { get; set; }
         public PacketPolicies Policies { get; set; }
 
         public abstract Packet Create();
 
-        public virtual void ReadPacket(PacketBuffer buffer)
+        public void ReadPacket(PacketBuffer buffer, PacketRole role)
         {
-            if (!Policies.HasFlag(PacketPolicies.Receive))
+            if (role == PacketRole.Client && !Policies.HasFlag(PacketPolicies.ServerToClient)
+                || role == PacketRole.Server && !Policies.HasFlag(PacketPolicies.ClientToServer))
+            {
                 throw new InvalidOperationException();
+            }
+
+            ReadPacketInternal(buffer, role);
         }
 
-        public virtual void WritePacket(PacketBuffer buffer)
+        public void WritePacket(PacketBuffer buffer, PacketRole role)
         {
-            if (!Policies.HasFlag(PacketPolicies.Send))
+            if (role == PacketRole.Client && !Policies.HasFlag(PacketPolicies.ClientToServer)
+                || role == PacketRole.Server && !Policies.HasFlag(PacketPolicies.ServerToClient))
+            {
                 throw new InvalidOperationException();
+            }
+
+            WritePacketInternal(buffer, role);
         }
+
+        protected virtual void ReadPacketInternal(PacketBuffer buffer, PacketRole role) { }
+        protected virtual void WritePacketInternal(PacketBuffer buffer, PacketRole role) { }
 
         protected Packet Init(Packet source)
         {

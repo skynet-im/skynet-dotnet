@@ -16,12 +16,12 @@ namespace Skynet.Protocol.Packets
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            PersonalMessage = buffer.ReadString();
+            PersonalMessage = buffer.ReadMediumString();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteString(PersonalMessage);
+            buffer.WriteMediumString(PersonalMessage);
         }
     }
 }

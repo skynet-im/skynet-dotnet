@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x00, PacketPolicies.Receive | PacketPolicies.Unauthenticated | PacketPolicies.Uninitialized)]
+    [Packet(0x00, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated | PacketPolicies.Uninitialized)]
     internal sealed class P00ConnectionHandshake : Packet
     {
         public int ProtocolVersion { get; set; }
@@ -14,11 +14,18 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P00ConnectionHandshake().Init(this);
 
-        public override void ReadPacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             ProtocolVersion = buffer.ReadInt32();
             ApplicationIdentifier = buffer.ReadShortString();
             VersionCode = buffer.ReadInt32();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            buffer.WriteInt32(ProtocolVersion);
+            buffer.WriteShortString(ApplicationIdentifier);
+            buffer.WriteInt32(VersionCode);
         }
     }
 }

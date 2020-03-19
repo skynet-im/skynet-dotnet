@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x01, PacketPolicies.Send | PacketPolicies.Unauthenticated | PacketPolicies.Uninitialized)]
+    [Packet(0x01, PacketPolicies.ServerToClient | PacketPolicies.Unauthenticated | PacketPolicies.Uninitialized)]
     internal sealed class P01ConnectionResponse : Packet
     {
         public ConnectionState ConnectionState { get; set; }
@@ -15,7 +15,18 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P01ConnectionResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            ConnectionState = (ConnectionState)buffer.ReadByte();
+
+            if (ConnectionState != ConnectionState.Valid)
+            {
+                LatestVersionCode = buffer.ReadInt32();
+                LatestVersion = buffer.ReadShortString();
+            }
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteByte((byte)ConnectionState);
 

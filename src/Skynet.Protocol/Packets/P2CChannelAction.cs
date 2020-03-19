@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x2C, PacketPolicies.Send)]
+    [Packet(0x2C, PacketPolicies.ServerToClient)]
     internal class P2CChannelAction : Packet
     {
         public long ChannelId { get; set; }
@@ -15,7 +15,14 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P2CChannelAction().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            ChannelId = buffer.ReadInt64();
+            AccountId = buffer.ReadInt64();
+            Action = (ChannelAction)buffer.ReadByte();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(ChannelId);
             buffer.WriteInt64(AccountId);

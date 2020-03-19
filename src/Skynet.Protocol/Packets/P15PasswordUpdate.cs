@@ -17,7 +17,7 @@ namespace Skynet.Protocol.Packets
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            LoopbackKeyNotify = buffer.ReadByteArray();
+            LoopbackKeyNotify = buffer.ReadMediumByteArray();
             KeyHash = buffer.ReadRawByteArray(32).ToArray();
         }
 

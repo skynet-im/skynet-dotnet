@@ -26,15 +26,22 @@ namespace Skynet.Protocol
 
         public override Packet Create() => new ChannelMessage().Init(this);
 
-        public sealed override void ReadPacket(PacketBuffer buffer)
+        protected sealed override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             PacketVersion = buffer.ReadByte();
             ChannelId = buffer.ReadInt64();
+            if (role == PacketRole.Client)
+                SenderId = buffer.ReadInt64();
             MessageId = buffer.ReadInt64();
+            if (role == PacketRole.Client)
+            {
+                SkipCount = buffer.ReadInt64();
+                DispatchTime = buffer.ReadDateTime();
+            }
             MessageFlags = (MessageFlags)buffer.ReadByte();
             if (MessageFlags.HasFlag(MessageFlags.ExternalFile))
                 FileId = buffer.ReadInt64();
-            PacketContent = buffer.ReadByteArray();
+            PacketContent = buffer.ReadMediumByteArray();
             if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
             {
                 var contentBuffer = new PacketBuffer(PacketContent);
@@ -42,21 +49,25 @@ namespace Skynet.Protocol
                 if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
                     File = new ChannelMessageFile(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
             }
-            ushort length = buffer.ReadUInt16();
+            int length = buffer.ReadUInt16();
             for (int i = 0; i < length; i++)
             {
                 Dependencies.Add(new Dependency(buffer.ReadInt64(), buffer.ReadInt64()));
             }
         }
 
-        public sealed override void WritePacket(PacketBuffer buffer)
+        protected sealed override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteByte(PacketVersion);
             buffer.WriteInt64(ChannelId);
-            buffer.WriteInt64(SenderId);
+            if (role == PacketRole.Server)
+                buffer.WriteInt64(SenderId);
             buffer.WriteInt64(MessageId);
-            buffer.WriteInt64(SkipCount);
-            buffer.WriteDateTime(DispatchTime);
+            if (role == PacketRole.Server)
+            {
+                buffer.WriteInt64(SkipCount);
+                buffer.WriteDateTime(DispatchTime);
+            }
             buffer.WriteByte((byte)MessageFlags);
             if (MessageFlags.HasFlag(MessageFlags.ExternalFile))
                 buffer.WriteInt64(FileId);
@@ -70,7 +81,7 @@ namespace Skynet.Protocol
                 PacketContent = contentBuffer.GetBuffer();
             }
 
-            buffer.WriteByteArray(PacketContent.Span);
+            buffer.WriteMediumByteArray(PacketContent.Span);
             buffer.WriteUInt16((ushort)Dependencies.Count);
             foreach (Dependency dependency in Dependencies)
             {
@@ -90,13 +101,13 @@ namespace Skynet.Protocol
 
         protected virtual void ReadMessage(PacketBuffer buffer)
         {
-            if (!Policies.HasFlag(PacketPolicies.Receive))
+            if (!Policies.HasFlag(PacketPolicies.ClientToServer))
                 throw new InvalidOperationException();
         }
 
         protected virtual void WriteMessage(PacketBuffer buffer)
         {
-            if (!Policies.HasFlag(PacketPolicies.Send))
+            if (!Policies.HasFlag(PacketPolicies.ServerToClient))
                 throw new InvalidOperationException();
         }
 

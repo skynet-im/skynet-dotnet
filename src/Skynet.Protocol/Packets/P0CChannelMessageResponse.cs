@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x0C, PacketPolicies.Send)]
+    [Packet(0x0C, PacketPolicies.ServerToClient)]
     internal sealed class P0CChannelMessageResponse : Packet
     {
         public long ChannelId { get; set; }
@@ -18,7 +18,17 @@ namespace Skynet.Protocol.Packets
 
         public override Packet Create() => new P0CChannelMessageResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            ChannelId = buffer.ReadInt64();
+            TempMessageId = buffer.ReadInt64();
+            StatusCode = (MessageSendStatus)buffer.ReadByte();
+            MessageId = buffer.ReadInt64();
+            SkipCount = buffer.ReadInt64();
+            DispatchTime = buffer.ReadDateTime();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(ChannelId);
             buffer.WriteInt64(TempMessageId);

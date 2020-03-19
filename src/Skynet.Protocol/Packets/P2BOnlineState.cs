@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x2B, PacketPolicies.Send)]
+    [Packet(0x2B, PacketPolicies.ServerToClient)]
     internal class P2BOnlineState : ChannelMessage
     {
         public OnlineState OnlineState { get; set; }

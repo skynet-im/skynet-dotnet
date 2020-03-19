@@ -6,14 +6,19 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
-    [Packet(0x05, PacketPolicies.Send)]
+    [Packet(0x05, PacketPolicies.ServerToClient)]
     internal sealed class P05DeleteAccountResponse : Packet
     {
         public DeleteAccountStatus StatusCode { get; set; }
 
         public override Packet Create() => new P05DeleteAccountResponse().Init(this);
 
-        public override void WritePacket(PacketBuffer buffer)
+        protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
+        {
+            StatusCode = (DeleteAccountStatus)buffer.ReadByte();
+        }
+
+        protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteByte((byte)StatusCode);
         }
