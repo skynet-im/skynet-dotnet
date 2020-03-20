@@ -1,6 +1,6 @@
 ﻿using Skynet.Model;
-using Skynet.Protocol.Attributes;
 using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
@@ -10,18 +10,18 @@ namespace Skynet.Protocol.Packets
     [AllowedFlags(MessageFlags.Unencrypted)]
     internal sealed class P26Bio : ChannelMessage
     {
-        public string PersonalMessage { get; set; }
+        public string Bio { get; set; }
 
         public override Packet Create() => new P26Bio().Init(this);
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            PersonalMessage = buffer.ReadMediumString();
+            Bio = buffer.ReadMediumString();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteMediumString(PersonalMessage);
+            buffer.WriteMediumString(Bio);
         }
     }
 }

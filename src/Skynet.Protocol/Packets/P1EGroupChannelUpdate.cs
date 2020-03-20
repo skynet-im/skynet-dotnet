@@ -1,6 +1,6 @@
 ﻿using Skynet.Model;
-using Skynet.Protocol.Attributes;
 using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
@@ -12,7 +12,7 @@ namespace Skynet.Protocol.Packets
     {
         public long GroupRevision { get; set; }
         public List<(long AccountId, GroupMemberFlags Flags)> Members { get; set; } = new List<(long AccountId, GroupMemberFlags Flags)>();
-        public byte[] KeyHistory { get; set; }
+        public byte[] ChannelHistory { get; set; }
 
         public override Packet Create() => new P1EGroupChannelUpdate().Init(this);
 
@@ -24,7 +24,7 @@ namespace Skynet.Protocol.Packets
             {
                 Members.Add((buffer.ReadInt64(), (GroupMemberFlags)buffer.ReadByte()));
             }
-            KeyHistory = buffer.ReadMediumByteArray().ToArray();
+            ChannelHistory = buffer.ReadMediumByteArray().ToArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
@@ -36,7 +36,7 @@ namespace Skynet.Protocol.Packets
                 buffer.WriteInt64(accountId);
                 buffer.WriteByte((byte)flags);
             }
-            buffer.WriteMediumByteArray(KeyHistory);
+            buffer.WriteMediumByteArray(ChannelHistory);
         }
     }
 }

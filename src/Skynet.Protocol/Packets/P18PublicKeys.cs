@@ -1,7 +1,7 @@
 ﻿using Skynet.Model;
+using Skynet.Network;
 using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
