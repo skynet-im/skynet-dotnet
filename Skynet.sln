@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{1A7D56C5-2B1A-4C
 		azure-pipelines.yml = azure-pipelines.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Protocol.Tests", "tests\Skynet.Protocol.Tests\Skynet.Protocol.Tests.csproj", "{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{F9D2D65F-F439-41D6-A7F4-EF1594A7DAFA} = {A875207C-A6EC-419F-886A-3409225788E9}
 		{1F8C6415-E840-4027-8137-B83DC5BECA44} = {A875207C-A6EC-419F-886A-3409225788E9}
 		{C07DEB2D-CA4B-44CC-8B67-EEA458F01BDC} = {B4FD2640-4ECD-4396-80AB-BCD331922AA3}
+		{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112} = {B4FD2640-4ECD-4396-80AB-BCD331922AA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0F9F5513-F674-476B-98D5-9A53847AA3A0}

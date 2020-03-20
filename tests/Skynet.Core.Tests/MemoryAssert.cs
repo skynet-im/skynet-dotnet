@@ -3,7 +3,7 @@ using System;
 
 namespace Skynet.Tests
 {
-    internal static class MemoryAssert
+    public static class MemoryAssert
     {
         public static void AreEqual<T>(ReadOnlySpan<T> expected, ReadOnlySpan<T> actual) where T : IEquatable<T>
         {
