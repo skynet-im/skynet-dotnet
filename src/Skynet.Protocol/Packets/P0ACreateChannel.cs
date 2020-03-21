@@ -1,13 +1,13 @@
 ﻿using Skynet.Model;
-using Skynet.Protocol.Attributes;
 using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x0A, PacketPolicies.Duplex)]
-    internal sealed class P0ACreateChannel : Packet
+    public sealed class P0ACreateChannel : Packet
     {
         public long ChannelId { get; set; }
         public ChannelType ChannelType { get; set; }

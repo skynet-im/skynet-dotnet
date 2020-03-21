@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [Packet(0x21, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.None)]
 
-    internal sealed class P21MessageOverride : ChannelMessage
+    public sealed class P21MessageOverride : ChannelMessage
     {
         public OverrideAction Action { get; set; }
         public string NewText { get; set; }

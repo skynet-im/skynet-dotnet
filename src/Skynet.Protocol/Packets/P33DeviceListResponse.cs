@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x33, PacketPolicies.ServerToClient)]
-    internal class P33DeviceListResponse : Packet
+    public sealed class P33DeviceListResponse : Packet
     {
         public List<SessionDetails> SessionDetails { get; set; } = new List<SessionDetails>();
 

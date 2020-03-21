@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum ImageShape
+    public enum ImageShape
     {
         Square,
         Squircle,

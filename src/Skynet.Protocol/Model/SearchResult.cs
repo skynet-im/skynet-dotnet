@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Model
 {
-    internal struct SearchResult
+    public struct SearchResult
     {
         public long AccountId { get; set; }
         public string AccountName { get; set; }

@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x29, PacketPolicies.ServerToClient)]
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
-    internal sealed class P29DeviceList : ChannelMessage
+    public sealed class P29DeviceList : ChannelMessage
     {
         public List<SessionInformation> Sessions { get; set; } = new List<SessionInformation>();
 

@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum MessageType
+    public enum MessageType
     {
         Plaintext,
         Image,

@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x0D, PacketPolicies.ServerToClient)]
-    internal sealed class P0DDeleteChannel : Packet
+    public sealed class P0DDeleteChannel : Packet
     {
         public long ChannelId { get; set; }
 

@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [Packet(0x20, PacketPolicies.Duplex)]
     [AllowedFlags(MessageFlags.MediaMessage | MessageFlags.ExternalFile)]
 
-    internal sealed class P20ChatMessage : ChannelMessage
+    public sealed class P20ChatMessage : ChannelMessage
     {
         public MessageType MessageType { get; set; }
         public string Text { get; set; }

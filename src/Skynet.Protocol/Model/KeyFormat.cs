@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum KeyFormat
+    public enum KeyFormat
     {
         BouncyCastle
     }

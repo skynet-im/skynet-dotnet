@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x13, PacketPolicies.ClientToServer)]
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
-    internal sealed class P13QueueMailAddressChange : ChannelMessage
+    public sealed class P13QueueMailAddressChange : ChannelMessage
     {
         public string NewMailAddress { get; set; }
 

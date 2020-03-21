@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x26, PacketPolicies.Duplex)]
     [AllowedFlags(MessageFlags.Unencrypted)]
-    internal sealed class P26Bio : ChannelMessage
+    public sealed class P26Bio : ChannelMessage
     {
         public string Bio { get; set; }
 

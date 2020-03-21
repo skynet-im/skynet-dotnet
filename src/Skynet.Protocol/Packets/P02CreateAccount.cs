@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x02, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated)]
-    internal sealed class P02CreateAccount : Packet
+    public sealed class P02CreateAccount : Packet
     {
         public string AccountName { get; set; }
         public byte[] KeyHash { get; set; }

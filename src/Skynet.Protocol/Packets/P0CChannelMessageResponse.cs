@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x0C, PacketPolicies.ServerToClient)]
-    internal sealed class P0CChannelMessageResponse : Packet
+    public sealed class P0CChannelMessageResponse : Packet
     {
         public long ChannelId { get; set; }
         public long TempMessageId { get; set; }

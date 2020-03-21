@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x0B, PacketPolicies.ServerToClient)]
-    internal class P0BSyncStarted : Packet
+    public sealed class P0BSyncStarted : Packet
     {
         public int MinCount { get; set; }
 

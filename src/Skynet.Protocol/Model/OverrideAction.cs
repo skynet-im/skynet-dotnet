@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum OverrideAction
+    public enum OverrideAction
     {
         Edit,
         Delete

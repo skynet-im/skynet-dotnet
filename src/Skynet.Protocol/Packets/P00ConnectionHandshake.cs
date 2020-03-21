@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x00, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated | PacketPolicies.Uninitialized)]
-    internal sealed class P00ConnectionHandshake : Packet
+    public sealed class P00ConnectionHandshake : Packet
     {
         public int ProtocolVersion { get; set; }
         public string ApplicationIdentifier { get; set; }

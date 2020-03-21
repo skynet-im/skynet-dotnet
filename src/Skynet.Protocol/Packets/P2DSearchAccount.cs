@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x2D, PacketPolicies.ClientToServer)]
-    internal sealed class P2DSearchAccount : Packet
+    public sealed class P2DSearchAccount : Packet
     {
         public string Query { get; set; }
 

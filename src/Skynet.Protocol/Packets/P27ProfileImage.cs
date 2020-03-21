@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x27, PacketPolicies.Duplex)]
     [AllowedFlags(MessageFlags.Unencrypted | MessageFlags.MediaMessage | MessageFlags.ExternalFile)]
-    internal sealed class P27ProfileImage : ChannelMessage
+    public sealed class P27ProfileImage : ChannelMessage
     {
         public string Caption { get; set; }
 

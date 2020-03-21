@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum OnlineState
+    public enum OnlineState
     {
         Inactive,
         Active

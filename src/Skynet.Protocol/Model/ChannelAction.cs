@@ -1,6 +1,6 @@
 ﻿namespace Skynet.Protocol.Model
 {
-    internal enum ChannelAction
+    public enum ChannelAction
     {
         None,
         Typing,

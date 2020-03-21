@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol
 {
-    internal class ChannelMessage : Packet
+    public class ChannelMessage : Packet
     {
         public byte PacketVersion { get; set; }
         public long ChannelId { get; set; }

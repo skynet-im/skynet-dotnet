@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x2F, PacketPolicies.ServerToClient)]
-    internal sealed class P2FCreateChannelResponse : Packet
+    public sealed class P2FCreateChannelResponse : Packet
     {
         public long TempChannelId { get; set; }
         public CreateChannelStatus StatusCode { get; set; }

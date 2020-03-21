@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x28, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
-    internal sealed class P28BlockList : ChannelMessage
+    public sealed class P28BlockList : ChannelMessage
     {
         public List<long> BlockedAccounts { get; set; } = new List<long>();
         public List<long> BlockedConversations { get; set; } = new List<long>();

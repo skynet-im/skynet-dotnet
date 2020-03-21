@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Attributes
     /// Use the <see cref="AllowedFlagsAttribute"/> to restrict additional flags.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    internal sealed class RequiredFlagsAttribute : MessageFlagsAttribute
+    public sealed class RequiredFlagsAttribute : MessageFlagsAttribute
     {
         public RequiredFlagsAttribute(MessageFlags flags)
             : base(flags) { }

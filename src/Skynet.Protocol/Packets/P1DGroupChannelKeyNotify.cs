@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
     [Packet(0x1D, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.NoSenderSync)]
 
-    internal sealed class P1DGroupChannelKeyNotify : ChannelMessage
+    public sealed class P1DGroupChannelKeyNotify : ChannelMessage
     {
         public long ChannelId { get; set; }
         public byte[] NewKey { get; set; }

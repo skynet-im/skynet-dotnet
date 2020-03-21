@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x08, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated)]
-    internal sealed class P08RestoreSession : Packet
+    public sealed class P08RestoreSession : Packet
     {
         public long SessionId { get; set; }
         public byte[] SessionToken { get; set; }

@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x2B, PacketPolicies.ServerToClient)]
     [MessageFlags(MessageFlags.Unencrypted | MessageFlags.NoSenderSync)]
-    internal class P2BOnlineState : ChannelMessage
+    public sealed class P2BOnlineState : ChannelMessage
     {
         public OnlineState OnlineState { get; set; }
         public DateTime LastActive { get; set; }

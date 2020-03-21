@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x18, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Unencrypted)]
-    internal sealed class P18PublicKeys : ChannelMessage
+    public sealed class P18PublicKeys : ChannelMessage
     {
         public KeyFormat SignatureKeyFormat { get; set; }
         public byte[] SignatureKey { get; set; }

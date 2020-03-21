@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Model
 {
-    internal struct Dependency
+    public struct Dependency
     {
         public Dependency(long accountId, long messageId)
         {

@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x1E, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Unencrypted)]
-    internal sealed class P1EGroupChannelUpdate : ChannelMessage
+    public sealed class P1EGroupChannelUpdate : ChannelMessage
     {
         public long GroupRevision { get; set; }
         public List<(long AccountId, GroupMemberFlags Flags)> Members { get; set; } = new List<(long AccountId, GroupMemberFlags Flags)>();

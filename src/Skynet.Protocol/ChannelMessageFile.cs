@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol
 {
-    internal sealed class ChannelMessageFile
+    public sealed class ChannelMessageFile
     {
         public string Name { get; set; }
         public DateTime CreationTime { get; set; }

@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x16, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Loopback)]
-    internal sealed class P16LoopbackKeyNotify : ChannelMessage
+    public sealed class P16LoopbackKeyNotify : ChannelMessage
     {
         public byte[] Key { get; set; }
         public override Packet Create() => new P16LoopbackKeyNotify().Init(this);

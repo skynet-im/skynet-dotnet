@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x2C, PacketPolicies.ServerToClient)]
-    internal class P2CChannelAction : Packet
+    public sealed class P2CChannelAction : Packet
     {
         public long ChannelId { get; set; }
         public long AccountId { get; set; }

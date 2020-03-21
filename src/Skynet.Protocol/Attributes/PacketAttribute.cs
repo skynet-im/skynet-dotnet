@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Skynet.Protocol.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    internal class PacketAttribute : Attribute
+    public sealed class PacketAttribute : Attribute
     {
         public PacketAttribute(byte packedId, PacketPolicies packetPolicies)
         {

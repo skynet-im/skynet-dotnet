@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x1C, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Loopback)]
-    internal sealed class P1CDirectChannelCustomization : ChannelMessage
+    public sealed class P1CDirectChannelCustomization : ChannelMessage
     {
         public string CustomNickname { get; set; }
         public ImageShape ProfileImageShape { get; set; }

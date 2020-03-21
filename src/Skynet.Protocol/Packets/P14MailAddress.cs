@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x14, PacketPolicies.ServerToClient)]
     [MessageFlags(MessageFlags.Unencrypted)]
-    internal sealed class P14MailAddress : ChannelMessage
+    public sealed class P14MailAddress : ChannelMessage
     {
         public string MailAddress { get; set; }
 

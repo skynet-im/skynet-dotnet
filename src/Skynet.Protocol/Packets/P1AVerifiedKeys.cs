@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x1A, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Loopback)]
-    internal sealed class P1AVerifiedKeys : ChannelMessage
+    public sealed class P1AVerifiedKeys : ChannelMessage
     {
         public byte[] Sha256 { get; set; }
 

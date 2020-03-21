@@ -1,12 +1,12 @@
-﻿using Skynet.Protocol.Attributes;
-using Skynet.Network;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x04, PacketPolicies.ClientToServer)]
-    internal sealed class P04DeleteAccount : Packet
+    public sealed class P04DeleteAccount : Packet
     {
         public byte[] KeyHash { get; set; }
 

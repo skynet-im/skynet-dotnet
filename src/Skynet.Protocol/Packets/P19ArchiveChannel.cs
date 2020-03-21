@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x19, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Unencrypted)]
-    internal sealed class P19ArchiveChannel : ChannelMessage
+    public sealed class P19ArchiveChannel : ChannelMessage
     {
         public ArchiveMode ArchiveMode { get; set; }
 

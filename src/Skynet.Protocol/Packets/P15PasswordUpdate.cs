@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x15, PacketPolicies.Duplex)]
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
-    internal sealed class P15PasswordUpdate : ChannelMessage
+    public sealed class P15PasswordUpdate : ChannelMessage
     {
         public ReadOnlyMemory<byte> LoopbackKeyNotify { get; set; }
         public byte[] KeyHash { get; set; }

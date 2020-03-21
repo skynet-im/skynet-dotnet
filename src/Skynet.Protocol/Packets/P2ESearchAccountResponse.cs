@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x2E, PacketPolicies.ServerToClient)]
-    internal sealed class P2ESearchAccountResponse : Packet
+    public sealed class P2ESearchAccountResponse : Packet
     {
         public List<SearchResult> Results { get; set; } = new List<SearchResult>();
 

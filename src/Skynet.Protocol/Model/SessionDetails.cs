@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol.Model
 {
-    internal struct SessionDetails
+    public struct SessionDetails
     {
         public SessionDetails(long sessionId, DateTime lastConnected, int lastVersionCode)
         {

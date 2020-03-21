@@ -1,13 +1,13 @@
-﻿using Skynet.Protocol.Attributes;
+﻿using Skynet.Network;
+using Skynet.Protocol.Attributes;
 using Skynet.Protocol.Model;
-using Skynet.Network;
 using System;
 using System.Collections.Generic;
 
 namespace Skynet.Protocol.Packets
 {
     [Packet(0x34, PacketPolicies.ClientToServer)]
-    internal class P34SetClientState : Packet
+    public sealed class P34SetClientState : Packet
     {
         public OnlineState OnlineState { get; set; }
         public ChannelAction Action { get; set; }

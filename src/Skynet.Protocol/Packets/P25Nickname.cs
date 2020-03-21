@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
 {
     [Packet(0x25, PacketPolicies.Duplex)]
     [AllowedFlags(MessageFlags.Unencrypted)]
-    internal sealed class P25Nickname : ChannelMessage
+    public sealed class P25Nickname : ChannelMessage
     {
         public string Nickname { get; set; }
 

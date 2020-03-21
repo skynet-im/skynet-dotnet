@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [Packet(0x24, PacketPolicies.Duplex)]
     [AllowedFlags(MessageFlags.MediaMessage | MessageFlags.ExternalFile)]
 
-    internal sealed class P24DaystreamMessage : ChannelMessage
+    public sealed class P24DaystreamMessage : ChannelMessage
     {
         public MessageType MessageType { get; set; }
         public string Text { get; set; }
