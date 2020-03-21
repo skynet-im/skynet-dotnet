@@ -11,7 +11,7 @@ namespace Skynet.Protocol.Packets
 
     public sealed class P1DGroupChannelKeyNotify : ChannelMessage
     {
-        public long ChannelId { get; set; }
+        public long GroupChannelId { get; set; }
         public byte[] NewKey { get; set; }
         public byte[] HistoryKey { get; set; }
 

@@ -18,15 +18,7 @@ namespace Skynet.Protocol.Packets
             int resultCount = buffer.ReadUInt16();
             for (int i = 0; i < resultCount; i++)
             {
-                var result = new SearchResult(buffer.ReadInt64(), buffer.ReadShortString());
-
-                int forwardedCount = buffer.ReadUInt16();
-                for (int j = 0; j < forwardedCount; j++)
-                {
-                    result.ForwardedPackets.Add((buffer.ReadByte(), buffer.ReadMediumByteArray().ToArray()));
-                }
-
-                Results.Add(result);
+                Results.Add(new SearchResult(buffer.ReadInt64(), buffer.ReadShortString()));
             }
         }
 
@@ -37,12 +29,6 @@ namespace Skynet.Protocol.Packets
             {
                 buffer.WriteInt64(result.AccountId);
                 buffer.WriteShortString(result.AccountName);
-                buffer.WriteUInt16((ushort)result.ForwardedPackets.Count);
-                foreach ((byte packetId, byte[] packetContent) in result.ForwardedPackets)
-                {
-                    buffer.WriteByte(packetId);
-                    buffer.WriteMediumByteArray(packetContent);
-                }
             }
         }
     }

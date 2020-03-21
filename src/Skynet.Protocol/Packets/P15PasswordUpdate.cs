@@ -10,20 +10,24 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
     public sealed class P15PasswordUpdate : ChannelMessage
     {
-        public ReadOnlyMemory<byte> LoopbackKeyNotify { get; set; }
+        public byte[] PreviousKeyHash { get; set; }
         public byte[] KeyHash { get; set; }
+        public byte[] KeyHistory { get; set; }
 
         public override Packet Create() => new P15PasswordUpdate().Init(this);
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            LoopbackKeyNotify = buffer.ReadMediumByteArray();
+            PreviousKeyHash = buffer.ReadRawByteArray(32).ToArray();
             KeyHash = buffer.ReadRawByteArray(32).ToArray();
+            KeyHistory = buffer.ReadMediumByteArray().ToArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
+            buffer.WriteRawByteArray(PreviousKeyHash);
             buffer.WriteRawByteArray(KeyHash);
+            buffer.WriteMediumByteArray(KeyHistory);
         }
     }
 }
