@@ -16,9 +16,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_", "_", "{1A7D56C5-2B1A-4CA6-BF5F-7B3891E14A02}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skynet.Protocol.Tests", "tests\Skynet.Protocol.Tests\Skynet.Protocol.Tests.csproj", "{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skynet.Protocol.Tests", "tests\Skynet.Protocol.Tests\Skynet.Protocol.Tests.csproj", "{CA5120BE-25D7-4971-9BA2-1F1BD0CA5112}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
