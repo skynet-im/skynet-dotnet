@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Copyright>© 2018-2020 Daniel Lerch, Twometer and Beniox</Copyright>
+    <Version>5.2.0</Version>
+    <PackageLicenseExpression>GPL-3.0</PackageLicenseExpression>
+    <Authors>Daniel Lerch, Twometer, Beniox</Authors>
+    <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
+    <Company>Skynet Messenger</Company>
+    <Product>Skynet Protocol Library</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Skynet.Core\Skynet.Core.csproj" />
+  </ItemGroup>
+
+</Project>

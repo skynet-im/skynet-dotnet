@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Skynet</RootNamespace>
+    <Nullable>enable</Nullable>
+    <Copyright>© 2017-2020 Daniel Lerch</Copyright>
+    <Version>5.2.0</Version>
+    <PackageLicenseExpression>GPL-3.0</PackageLicenseExpression>
+    <Authors>Daniel Lerch</Authors>
+    <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
+    <Company>Skynet Messenger</Company>
+    <Product>Skynet Core Library</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.0" />
+  </ItemGroup>
+
+</Project>
