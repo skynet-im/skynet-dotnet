@@ -30,7 +30,8 @@ namespace Skynet.Protocol
         public void Decrypt(ReadOnlySpan<byte> key)
         {
             if (key.Length != 64) throw new ArgumentOutOfRangeException(nameof(key), key.Length, "The key must be exactly 64 bytes long.");
-            if (PacketContent == null) throw new InvalidOperationException("You cannot decrypt a message that has not been read");
+            if (PacketContent == null) throw new InvalidOperationException("You have to call Packet.ReadPacket() on a ChannelMessage before you can decrypt it.");
+            if (MessageFlags.HasFlag(MessageFlags.Unencrypted)) throw new InvalidOperationException("You cannot decrypt a message with MessageFlags.Unencrypted.");
 
             byte[] hmacKey = key.Slice(0, 32).ToArray();
             byte[] aesKey = key.Slice(32, 32).ToArray();
@@ -42,6 +43,8 @@ namespace Skynet.Protocol
         public void Encrypt(ReadOnlySpan<byte> key)
         {
             if (key.Length != 64) throw new ArgumentOutOfRangeException(nameof(key), key.Length, "The key must be exactly 64 bytes long.");
+            if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
+                throw new InvalidOperationException("You cannot encrypt a message with MessageFlags.Unencrypted.");
 
             byte[] hmacKey = key.Slice(0, 32).ToArray();
             byte[] aesKey = key.Slice(32, 32).ToArray();
@@ -101,9 +104,10 @@ namespace Skynet.Protocol
                 if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
                     PacketContent = WriteContent();
                 else
-                    throw new InvalidOperationException("A message without MessageFlags.Unencrypted has be encrypted before it can be written.");
+                    throw new InvalidOperationException(
+                        "Before writing an encrypted message, you must either assign an encrypted PacketContent or call ChannelMessage.Encrypt().");
             }
-            
+
             buffer.WriteMediumByteArray(PacketContent.Value.Span);
 
             buffer.WriteUInt16((ushort)Dependencies.Count);
