@@ -26,8 +26,8 @@ namespace Skynet.Tests.Network
         {
             var buffer = new PacketBuffer(capacity: 4);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.Position = -1);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.Position = 5);
-            buffer.Position = 4;
+            buffer.Position = 500;
+            Assert.IsTrue(buffer.Capacity >= 500);
         }
 
         [TestMethod]

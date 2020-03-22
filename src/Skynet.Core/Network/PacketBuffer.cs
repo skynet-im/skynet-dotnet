@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -10,14 +11,16 @@ namespace Skynet.Network
     /// <summary>
     /// Reads and writes primitive data types in a little endian binary format.
     /// </summary>
-    public sealed class PacketBuffer
+    public sealed class PacketBuffer : IDisposable
     {
-        private const int DefaultCapacity = 65536;
-        private static readonly Encoding encoding = 
+        private const int DefaultCapacity = 256;
+        private static readonly Encoding encoding =
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
+        private byte[]? rented;
         private Memory<byte> buffer;
         private int position;
+        private bool disposed;
 
         public PacketBuffer() : this(DefaultCapacity) { }
 
@@ -25,7 +28,7 @@ namespace Skynet.Network
         {
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
 
-            buffer = new byte[capacity];
+            Allocate(capacity);
             CanWrite = true;
         }
 
@@ -34,7 +37,7 @@ namespace Skynet.Network
             this.buffer = MemoryMarshal.AsMemory(buffer);
             CanWrite = false;
         }
-        
+
         public PacketBuffer(Memory<byte> buffer)
         {
             this.buffer = buffer;
@@ -43,44 +46,104 @@ namespace Skynet.Network
 
         public bool CanWrite { get; }
 
-        public int Capacity => buffer.Length;
+        public int Capacity
+        {
+            get
+            {
+                if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+                return buffer.Length;
+            }
+        }
 
         public int Position
         {
-            get => position;
+            get
+            {
+                if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+                return position;
+            }
+
             set
             {
-                if (value < 0 || value > Capacity) throw new ArgumentOutOfRangeException(nameof(value));
+                if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                EnsureCapacity(value);
                 position = value;
             }
         }
 
-        public Memory<byte> GetRawBuffer() => buffer;
-        public ReadOnlyMemory<byte> GetBuffer() => buffer.Slice(0, Position);
-
-        private void EnsureSpace(int length)
+        public ReadOnlyMemory<byte> GetBuffer()
         {
+            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+
+            return buffer.Slice(0, Position);
+        }
+
+        public Memory<byte> GetInternalBuffer()
+        {
+            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+
+            return buffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void PrepareRead(int length)
+        {
+            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+            if (Position + length > Capacity) throw new EndOfStreamException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void PrepareWrite(int length)
+        {
+            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
             if (!CanWrite) throw new InvalidOperationException("Attempted to write on a readonly PacketBuffer");
 
-            if (Position + length > Capacity)
+            EnsureCapacity(Position + length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void EnsureCapacity(int length)
+        {
+            if (length > Capacity)
             {
-                int newSize = Math.Max(buffer.Length * 2, Position + length);
-                byte[] newBuffer = new byte[newSize];
+                int size = Math.Max(buffer.Length * 2, Position + length);
+                Allocate(size);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Allocate(int length)
+        {
+            if (length > 1024)
+            {
+                // ArrayPool is faster for large arrays: https://adamsitnik.com/Array-Pool/
+                rented = ArrayPool<byte>.Shared.Rent(length);
+                buffer.CopyTo(rented);
+                buffer = rented;
+            }
+            else if (length > 0)
+            {
+                byte[] newBuffer = new byte[length];
                 buffer.CopyTo(newBuffer);
                 buffer = newBuffer;
+            }
+            else
+            {
+                buffer = Memory<byte>.Empty;
             }
         }
 
         public ReadOnlyMemory<byte> ReadRawByteArray(int count)
         {
-            if (Position + count > Capacity) throw new EndOfStreamException();
+            PrepareRead(count);
             ReadOnlyMemory<byte> value = buffer.Slice(Position, count);
             position += count;
             return value;
         }
         public void WriteRawByteArray(ReadOnlySpan<byte> array)
         {
-            EnsureSpace(array.Length);
+            PrepareWrite(array.Length);
             array.CopyTo(buffer.Slice(Position).Span);
             position += array.Length;
         }
@@ -88,35 +151,35 @@ namespace Skynet.Network
         #region primitives
         public bool ReadBoolean()
         {
-            if (Position + sizeof(byte) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(byte));
             bool value = buffer.Span[Position] != 0;
             position++;
             return value;
         }
         public void WriteBoolean(bool value)
         {
-            EnsureSpace(sizeof(byte));
+            PrepareWrite(sizeof(byte));
             buffer.Span[Position] = value ? (byte)1 : (byte)0;
             position++;
         }
 
         public byte ReadByte()
         {
-            if (Position + sizeof(byte) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(byte));
             byte value = buffer.Span[Position];
             position += sizeof(byte);
             return value;
         }
         public void WriteByte(byte value)
         {
-            EnsureSpace(sizeof(byte));
+            PrepareWrite(sizeof(byte));
             buffer.Span[Position] = value;
             position += sizeof(byte);
         }
-        
+
         public ushort ReadUInt16()
         {
-            if (Position + sizeof(ushort) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(ushort));
             ushort value = Unsafe.ReadUnaligned<ushort>(ref buffer.Span[Position]);
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
@@ -125,7 +188,7 @@ namespace Skynet.Network
         }
         public void WriteUInt16(ushort value)
         {
-            EnsureSpace(sizeof(ushort));
+            PrepareWrite(sizeof(ushort));
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
             Unsafe.WriteUnaligned(ref buffer.Span[Position], value);
@@ -134,7 +197,7 @@ namespace Skynet.Network
 
         public int ReadInt32()
         {
-            if (Position + sizeof(int) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(int));
             int value = Unsafe.ReadUnaligned<int>(ref buffer.Span[Position]);
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
@@ -143,7 +206,7 @@ namespace Skynet.Network
         }
         public void WriteInt32(int value)
         {
-            EnsureSpace(sizeof(int));
+            PrepareWrite(sizeof(int));
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
             Unsafe.WriteUnaligned(ref buffer.Span[Position], value);
@@ -152,7 +215,7 @@ namespace Skynet.Network
 
         public long ReadInt64()
         {
-            if (Position + sizeof(long) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(long));
             long value = Unsafe.ReadUnaligned<long>(ref buffer.Span[Position]);
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
@@ -161,7 +224,7 @@ namespace Skynet.Network
         }
         public void WriteInt64(long value)
         {
-            EnsureSpace(sizeof(long));
+            PrepareWrite(sizeof(long));
             if (!BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
             Unsafe.WriteUnaligned(ref buffer.Span[Position], value);
@@ -248,9 +311,9 @@ namespace Skynet.Network
         #region arrays
         public ReadOnlyMemory<byte> ReadShortByteArray()
         {
-            if (Position + sizeof(byte) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(byte));
             int length = buffer.Span[Position];
-            if (Position + sizeof(byte) + length > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(byte) + length);
             ReadOnlyMemory<byte> value = buffer.Slice(Position + sizeof(byte), length);
             position += sizeof(byte) + length;
             return value;
@@ -259,7 +322,7 @@ namespace Skynet.Network
         {
             if (array.Length > byte.MaxValue) throw new ArgumentOutOfRangeException(nameof(array));
 
-            EnsureSpace(sizeof(byte) + array.Length);
+            PrepareWrite(sizeof(byte) + array.Length);
             buffer.Span[Position] = (byte)array.Length;
             array.CopyTo(buffer.Span.Slice(Position + sizeof(byte), array.Length));
             position += sizeof(byte) + array.Length;
@@ -267,11 +330,11 @@ namespace Skynet.Network
 
         public ReadOnlyMemory<byte> ReadMediumByteArray()
         {
-            if (Position + sizeof(ushort) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(ushort));
             ushort length = Unsafe.ReadUnaligned<ushort>(ref buffer.Span[Position]);
             if (!BitConverter.IsLittleEndian)
                 length = BinaryPrimitives.ReverseEndianness(length);
-            if (Position + sizeof(ushort) + length > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(ushort) + length);
             ReadOnlyMemory<byte> value = buffer.Slice(Position + sizeof(ushort), length);
             position += sizeof(ushort) + length;
             return value;
@@ -280,7 +343,7 @@ namespace Skynet.Network
         {
             if (array.Length > ushort.MaxValue) throw new ArgumentOutOfRangeException(nameof(array));
 
-            EnsureSpace(sizeof(ushort) + array.Length);
+            PrepareWrite(sizeof(ushort) + array.Length);
             ushort length = (ushort)array.Length;
             if (!BitConverter.IsLittleEndian)
                 length = BinaryPrimitives.ReverseEndianness(length);
@@ -291,12 +354,12 @@ namespace Skynet.Network
 
         public ReadOnlyMemory<byte> ReadLongByteArray()
         {
-            if (Position + sizeof(int) > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(int));
             int length = Unsafe.ReadUnaligned<int>(ref buffer.Span[Position]);
             if (!BitConverter.IsLittleEndian)
                 length = BinaryPrimitives.ReverseEndianness(length);
             if (length < 0) throw new InvalidDataException();
-            if (Position + sizeof(int) + length > Capacity) throw new EndOfStreamException();
+            PrepareRead(sizeof(int) + length);
             ReadOnlyMemory<byte> value = buffer.Slice(Position + sizeof(int), length);
             position += sizeof(int) + length;
             return value;
@@ -305,7 +368,7 @@ namespace Skynet.Network
         {
             if (array.Length > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(array));
 
-            EnsureSpace(sizeof(int) + array.Length);
+            PrepareWrite(sizeof(int) + array.Length);
             int length = array.Length;
             if (!BitConverter.IsLittleEndian)
                 length = BinaryPrimitives.ReverseEndianness(length);
@@ -355,5 +418,21 @@ namespace Skynet.Network
             WriteLongByteArray(buffer.Slice(0, bytesUsed));
         }
         #endregion
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                if (rented != null)
+                {
+                    ArrayPool<byte>.Shared.Return(rented);
+                    rented = null;
+                }
+
+                buffer = default;
+
+                disposed = true;
+            }
+        }
     }
 }

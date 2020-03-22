@@ -24,7 +24,7 @@ namespace Skynet.Tests.Network
 
             await using (var writer = new PacketStream(source, true))
             {
-                await writer.WriteAsync(0x7F, data).ConfigureAwait(false);
+                await writer.WriteAsync(0x7F, buffer => buffer.WriteRawByteArray(data)).ConfigureAwait(false);
             }
 
             byte[] network = source.ToArray();
@@ -36,10 +36,11 @@ namespace Skynet.Tests.Network
 
             source.Position = 0;
             await using var reader = new PacketStream(source, true);
-            (bool success, byte id, ReadOnlyMemory<byte> buffer) = await reader.ReadAsync().ConfigureAwait(false);
-            Assert.IsTrue(success);
+            (byte id, PacketBuffer buffer) = await reader.ReadAsync().ConfigureAwait(false);
+            Assert.IsNotNull(buffer);
             Assert.AreEqual(0x7F, id);
-            MemoryAssert.AreEqual(data, buffer);
+            MemoryAssert.AreEqual(data, buffer.GetBuffer());
+            buffer.Dispose();
         }
 
         [TestMethod]
@@ -48,8 +49,8 @@ namespace Skynet.Tests.Network
             using var source = new MemoryStream(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, writable: false);
             await using var stream = new PacketStream(source, leaveInnerStreamOpen: true);
 
-            (bool success, _, _) = await stream.ReadAsync().ConfigureAwait(false);
-            Assert.IsFalse(success);
+            (_, PacketBuffer buffer) = await stream.ReadAsync().ConfigureAwait(false);
+            Assert.IsNull(buffer);
         }
 
         [TestMethod]
@@ -58,8 +59,9 @@ namespace Skynet.Tests.Network
             using var target = new MemoryStream();
             await using var stream = new PacketStream(target, leaveInnerStreamOpen: true);
 
-            byte[] buffer = new byte[1 << 24];
-            await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(() => stream.WriteAsync(0xFF, buffer).AsTask()).ConfigureAwait(false);
+            byte[] data = new byte[1 << 24];
+            await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(
+                () => stream.WriteAsync(0xFF, buffer => buffer.WriteRawByteArray(data)).AsTask()).ConfigureAwait(false);
         }
     }
 }
