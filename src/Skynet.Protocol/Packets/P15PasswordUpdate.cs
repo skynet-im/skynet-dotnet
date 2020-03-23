@@ -18,15 +18,15 @@ namespace Skynet.Protocol.Packets
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            PreviousKeyHash = buffer.ReadRawByteArray(32).ToArray();
-            KeyHash = buffer.ReadRawByteArray(32).ToArray();
-            KeyHistory = buffer.ReadMediumByteArray().ToArray();
+            PreviousKeyHash = buffer.ReadByteArray(32);
+            KeyHash = buffer.ReadByteArray(32);
+            KeyHistory = buffer.ReadMediumByteArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteRawByteArray(PreviousKeyHash);
-            buffer.WriteRawByteArray(KeyHash);
+            buffer.WriteByteArray(PreviousKeyHash);
+            buffer.WriteByteArray(KeyHash);
             buffer.WriteMediumByteArray(KeyHistory);
         }
     }

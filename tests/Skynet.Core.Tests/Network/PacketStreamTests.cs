@@ -24,7 +24,7 @@ namespace Skynet.Tests.Network
 
             await using (var writer = new PacketStream(source, true))
             {
-                await writer.WriteAsync(0x7F, buffer => buffer.WriteRawByteArray(data)).ConfigureAwait(false);
+                await writer.WriteAsync(0x7F, data).ConfigureAwait(false);
             }
 
             byte[] network = source.ToArray();
@@ -32,15 +32,15 @@ namespace Skynet.Tests.Network
             Assert.AreEqual(byte1, network[1]);
             Assert.AreEqual(byte2, network[2]);
             Assert.AreEqual(byte3, network[3]);
-            MemoryAssert.AreEqual<byte>(data, network.AsSpan().Slice(4));
+            MemoryAssert.AreEqual(data, network.AsSpan().Slice(4));
 
             source.Position = 0;
             await using var reader = new PacketStream(source, true);
-            (byte id, PacketBuffer buffer) = await reader.ReadAsync().ConfigureAwait(false);
-            Assert.IsNotNull(buffer);
+            (bool success, byte id, PoolableMemory buffer) = await reader.ReadAsync().ConfigureAwait(false);
+            Assert.IsTrue(success);
             Assert.AreEqual(0x7F, id);
-            MemoryAssert.AreEqual(data, buffer.GetBuffer());
-            buffer.Dispose();
+            MemoryAssert.AreEqual(data, buffer.Memory);
+            buffer.Return(false);
         }
 
         [TestMethod]
@@ -49,8 +49,8 @@ namespace Skynet.Tests.Network
             using var source = new MemoryStream(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, writable: false);
             await using var stream = new PacketStream(source, leaveInnerStreamOpen: true);
 
-            (_, PacketBuffer buffer) = await stream.ReadAsync().ConfigureAwait(false);
-            Assert.IsNull(buffer);
+            (bool success, _, _) = await stream.ReadAsync().ConfigureAwait(false);
+            Assert.IsFalse(success);
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Skynet.Tests.Network
 
             byte[] data = new byte[1 << 24];
             await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(
-                () => stream.WriteAsync(0xFF, buffer => buffer.WriteRawByteArray(data)).AsTask()).ConfigureAwait(false);
+                () => stream.WriteAsync(0xFF, data).AsTask()).ConfigureAwait(false);
         }
     }
 }

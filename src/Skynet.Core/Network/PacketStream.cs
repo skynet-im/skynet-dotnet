@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace Skynet.Network
         /// </summary>
         /// <exception cref="IOException">Failed to read from the underlying stream.</exception>
         /// <exception cref="ObjectDisposedException">The <see cref="PacketStream"/> has been disposed.</exception>
-        public async ValueTask<(byte id, PacketBuffer buffer)> ReadAsync(CancellationToken ct = default)
+        public async ValueTask<(bool success, byte id, PoolableMemory buffer)> ReadAsync(CancellationToken ct = default)
         {
             if (disposedValue) throw new ObjectDisposedException(nameof(PacketStream));
 
@@ -40,21 +41,18 @@ namespace Skynet.Network
             int length = (int)(packetMeta >> 8);
 
             // Use PacketBuffer with ArrayPool instead of allocating directly
-            var packetBuffer = new PacketBuffer(length);
-            Memory<byte> contentBuffer = packetBuffer.GetInternalBuffer();
+            PoolableMemory buffer = PoolableMemory.Allocate(length, true);
             bool success = false;
             try
             {
-                if (!(success = await ReadInternal(contentBuffer, ct).ConfigureAwait(false)))
+                if (!(success = await ReadInternal(buffer.Memory, ct).ConfigureAwait(false)))
                     return default;
 
-                packetBuffer.Position = length;
-
-                return (id, packetBuffer);
+                return (true, id, buffer);
             }
             finally
             {
-                if (!success) packetBuffer.Dispose();
+                if (!success) buffer.Return(false);
             }
         }
 
@@ -64,27 +62,28 @@ namespace Skynet.Network
         /// <exception cref="ArgumentOutOfRangeException">The packet payload is larger than 0x00ffffff bytes.</exception>
         /// <exception cref="IOException">Failed to write on the underlying stream.</exception>
         /// <exception cref="ObjectDisposedException">The <see cref="PacketStream"/> has been disposed.</exception>
-        public async ValueTask WriteAsync(byte id, Action<PacketBuffer> writeDataCallback, CancellationToken ct = default)
+        public async ValueTask WriteAsync(byte id, ReadOnlyMemory<byte> buffer, CancellationToken ct = default)
         {
             if (disposedValue) throw new ObjectDisposedException(nameof(PacketStream));
-            if (writeDataCallback == null) throw new ArgumentNullException(nameof(writeDataCallback));
+            if (buffer.Length > 0x00ffffff)
+                throw new ArgumentOutOfRangeException(nameof(buffer), "The packet payload is too large");
 
-            var packetBuffer = new PacketBuffer();
-            packetBuffer.WriteInt32(default);
-            writeDataCallback(packetBuffer);
-            int contentLength = packetBuffer.Position - sizeof(int);
-            if (contentLength > 0x00ffffff)
-                throw new ArgumentOutOfRangeException(nameof(writeDataCallback), "The packet payload is too large");
-
-            int packetMeta = unchecked((contentLength << 8) | id);
+            uint packetMeta = ((uint)buffer.Length << 8) | id;
             if (!BitConverter.IsLittleEndian)
                 packetMeta = BinaryPrimitives.ReverseEndianness(packetMeta);
 
-            packetBuffer.Position = 0;
-            packetBuffer.WriteInt32(packetMeta);
-            packetBuffer.Position = sizeof(int) + contentLength;
+            PoolableMemory memory = PoolableMemory.Allocate(sizeof(uint) + buffer.Length, true);
+            Unsafe.WriteUnaligned(ref memory.Memory.Span[0], packetMeta);
+            buffer.CopyTo(memory.Memory.Slice(sizeof(uint)));
 
-            await innerStream.WriteAsync(packetBuffer.GetBuffer(), ct).ConfigureAwait(false);
+            try
+            {
+                await innerStream.WriteAsync(memory.Memory, ct).ConfigureAwait(false);
+            }
+            finally
+            {
+                memory.Return(false);
+            }
         }
 
         private async ValueTask<bool> ReadInternal(Memory<byte> buffer, CancellationToken ct)

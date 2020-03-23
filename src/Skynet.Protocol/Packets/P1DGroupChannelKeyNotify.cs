@@ -20,15 +20,15 @@ namespace Skynet.Protocol.Packets
         protected override void ReadMessage(PacketBuffer buffer)
         {
             ChannelId = buffer.ReadInt64();
-            NewKey = buffer.ReadRawByteArray(64).ToArray();
-            HistoryKey = buffer.ReadRawByteArray(64).ToArray();
+            NewKey = buffer.ReadByteArray(64);
+            HistoryKey = buffer.ReadByteArray(64);
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
             buffer.WriteInt64(ChannelId);
-            buffer.WriteRawByteArray(NewKey);
-            buffer.WriteRawByteArray(HistoryKey);
+            buffer.WriteByteArray(NewKey);
+            buffer.WriteByteArray(HistoryKey);
         }
     }
 }

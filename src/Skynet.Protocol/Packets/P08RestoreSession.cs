@@ -18,7 +18,7 @@ namespace Skynet.Protocol.Packets
         protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             SessionId = buffer.ReadInt64();
-            SessionToken = buffer.ReadRawByteArray(32).ToArray();
+            SessionToken = buffer.ReadByteArray(32);
             ushort length = buffer.ReadUInt16();
             for (int i = 0; i < length; i++)
             {
@@ -29,7 +29,7 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(SessionId);
-            buffer.WriteRawByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken);
             buffer.WriteUInt16((ushort)Channels.Count);
             foreach (long channelId in Channels)
             {

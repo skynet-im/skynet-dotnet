@@ -27,7 +27,7 @@ namespace Skynet.Protocol
             {
                 ContentType = buffer.ReadShortString();
                 Length = buffer.ReadInt64();
-                Key = buffer.ReadRawByteArray(32).ToArray();
+                Key = buffer.ReadByteArray(32);
             }
         }
 
@@ -43,7 +43,7 @@ namespace Skynet.Protocol
             {
                 buffer.WriteShortString(ContentType);
                 buffer.WriteInt64(Length);
-                buffer.WriteRawByteArray(Key);
+                buffer.WriteByteArray(Key);
             }
         }
     }

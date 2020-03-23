@@ -16,12 +16,12 @@ namespace Skynet.Protocol.Packets
 
         protected override void ReadMessage(PacketBuffer buffer)
         {
-            Sha256 = buffer.ReadRawByteArray(32).ToArray();
+            Sha256 = buffer.ReadByteArray(32);
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteRawByteArray(Sha256);
+            buffer.WriteByteArray(Sha256);
         }
     }
 }
