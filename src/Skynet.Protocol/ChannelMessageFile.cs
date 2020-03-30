@@ -4,16 +4,28 @@ using System.Collections.Generic;
 
 namespace Skynet.Protocol
 {
-    public sealed class ChannelMessageFile
+    public sealed class ChannelMessageFile : IDisposable
     {
+        private bool disposed;
+        private PoolableMemory thumbnailData;
+        private byte[] key;
+
         public string Name { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime LastWriteTime { get; set; }
         public string ThumbnailContentType { get; set; }
-        public ReadOnlyMemory<byte> ThumbnailData { get; set; }
+        public PoolableMemory ThumbnailData
+        {
+            get { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); return thumbnailData; }
+            set { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); thumbnailData = value; }
+        }
         public string ContentType { get; set; }
         public long Length { get; set; }
-        public byte[] Key { get; set; }
+        public byte[] Key
+        {
+            get { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); return key; }
+            set { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); key = value; }
+        }
 
         public ChannelMessageFile(PacketBuffer buffer, bool external)
         {
@@ -21,7 +33,7 @@ namespace Skynet.Protocol
             CreationTime = buffer.ReadDateTime();
             LastWriteTime = buffer.ReadDateTime();
             ThumbnailContentType = buffer.ReadShortString();
-            ThumbnailData = buffer.ReadMediumByteArray();
+            ThumbnailData = buffer.ReadMediumPooledArray();
 
             if (external)
             {
@@ -37,13 +49,24 @@ namespace Skynet.Protocol
             buffer.WriteDateTime(CreationTime);
             buffer.WriteDateTime(LastWriteTime);
             buffer.WriteShortString(ThumbnailContentType);
-            buffer.WriteMediumByteArray(ThumbnailData.Span);
+            buffer.WriteMediumByteArray(ThumbnailData.Memory.Span);
 
             if (external)
             {
                 buffer.WriteShortString(ContentType);
                 buffer.WriteInt64(Length);
                 buffer.WriteByteArray(Key);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                ThumbnailData.Return(true);
+                Array.Clear(Key, 0, Key.Length);
+
+                disposed = true;
             }
         }
     }

@@ -33,5 +33,13 @@ namespace Skynet.Protocol.Packets
             buffer.WriteByte((byte)DerivationKeyFormat);
             buffer.WriteMediumByteArray(DerivationKey);
         }
+
+        protected override void DisposeMessage()
+        {
+            base.DisposeMessage();
+
+            Array.Clear(SignatureKey, 0, SignatureKey.Length);
+            Array.Clear(DerivationKey, 0, DerivationKey.Length);
+        }
     }
 }

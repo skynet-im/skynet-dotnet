@@ -91,13 +91,6 @@ namespace Skynet.Network
             return buffer.Slice(0, position);
         }
 
-        public Memory<byte> GetInternalBuffer()
-        {
-            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
-
-            return buffer;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void PrepareRead(int length)
         {
@@ -447,6 +440,15 @@ namespace Skynet.Network
 
                 disposed = true;
             }
+        }
+
+        public PoolableMemory GetBufferAndDispose()
+        {
+            if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
+
+            disposed = true;
+
+            return new PoolableMemory(buffer.Slice(0, position), rented);
         }
     }
 }

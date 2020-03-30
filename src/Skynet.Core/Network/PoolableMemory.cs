@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace Skynet.Network
 {
@@ -25,9 +26,15 @@ namespace Skynet.Network
             }
         }
 
-        public PoolableMemory(Memory<byte> memory, byte[]? rentedBuffer)
+        public PoolableMemory(Memory<byte> memory, byte[]? rentedBuffer = null)
         {
             Memory = memory;
+            RentedBuffer = rentedBuffer;
+        }
+
+        public PoolableMemory(ReadOnlyMemory<byte> memory, byte[]? rentedBuffer = null)
+        {
+            Memory = MemoryMarshal.AsMemory(memory);
             RentedBuffer = rentedBuffer;
         }
 

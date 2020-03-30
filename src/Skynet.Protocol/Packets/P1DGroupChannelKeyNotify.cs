@@ -30,5 +30,13 @@ namespace Skynet.Protocol.Packets
             buffer.WriteByteArray(NewKey);
             buffer.WriteByteArray(HistoryKey);
         }
+
+        protected override void DisposeMessage()
+        {
+            base.DisposeMessage();
+
+            Array.Clear(NewKey, 0, NewKey.Length);
+            Array.Clear(HistoryKey, 0, HistoryKey.Length);
+        }
     }
 }
