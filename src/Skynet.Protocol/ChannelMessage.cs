@@ -42,7 +42,7 @@ namespace Skynet.Protocol
 
             byte[] hmacKey = key.Slice(0, 32).ToArray();
             byte[] aesKey = key.Slice(32, 32).ToArray();
-            ReadContent(AesStatic.EncryptWithHmac(contentBuffer.Value.Memory, hmacKey, aesKey));
+            ReadContent(AesStatic.DecryptWithHmac(contentBuffer.Value.Memory, hmacKey, aesKey));
             Array.Clear(hmacKey, 0, 32);
             Array.Clear(aesKey, 0, 32);
         }
