@@ -11,8 +11,10 @@
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
     <Company>Skynet Messenger</Company>
     <Product>Skynet Core Library</Product>
-    <Description>Skynet Core Library - referenced by all Skynet applications.
-It contains global data types and networking fundamentals.</Description>
+    <Description>
+      Skynet Core Library - referenced by all Skynet applications.
+      It contains global data types and networking fundamentals.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
