@@ -84,6 +84,9 @@ namespace Skynet.Network
             }
         }
 
+        /// <summary>
+        /// Returns the internal buffer. If you want take ownership call <see cref="GetBufferAndDispose"/> instead.
+        /// </summary>
         public ReadOnlyMemory<byte> GetBuffer()
         {
             if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));
@@ -442,6 +445,10 @@ namespace Skynet.Network
             }
         }
 
+        /// <summary>
+        /// Returns the internal buffer and disposes this <see cref="PacketBuffer"/>
+        /// whithout clearing or freeing its buffer.
+        /// </summary>
         public PoolableMemory GetBufferAndDispose()
         {
             if (disposed) throw new ObjectDisposedException(nameof(PacketBuffer));

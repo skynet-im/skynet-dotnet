@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace Skynet.Network
 {
+    /// <summary>
+    /// Represents a byte array that may be rented from an <see cref="ArrayPool{T}"/>.
+    /// </summary>
     public readonly struct PoolableMemory
     {
         // ArrayPool is faster for large arrays: https://adamsitnik.com/Array-Pool/

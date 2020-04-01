@@ -42,7 +42,7 @@ namespace Skynet.Protocol
 
             byte[] hmacKey = key.Slice(0, 32).ToArray();
             byte[] aesKey = key.Slice(32, 32).ToArray();
-            ReadContent(AesStatic.DecryptWithHmac(contentBuffer.Value.Memory, hmacKey, aesKey));
+            ReadContent(AesStatic.DecryptWithHmac(contentBuffer.Value.Memory, hmacKey, aesKey), clearBuffer: true);
             Array.Clear(hmacKey, 0, 32);
             Array.Clear(aesKey, 0, 32);
         }
@@ -91,7 +91,7 @@ namespace Skynet.Protocol
 
             if (MessageFlags.HasFlag(MessageFlags.Unencrypted))
             {
-                ReadContent(contentBuffer.Value.Memory);
+                ReadContent(contentBuffer.Value.Memory, clearBuffer: false);
             }
 
             int length = buffer.ReadUInt16();
@@ -154,9 +154,9 @@ namespace Skynet.Protocol
         protected virtual void ReadMessage(PacketBuffer buffer) { }
         protected virtual void WriteMessage(PacketBuffer buffer) { }
 
-        private void ReadContent(ReadOnlyMemory<byte> buffer)
+        private void ReadContent(ReadOnlyMemory<byte> buffer, bool clearBuffer)
         {
-            using var contentBuffer = new PacketBuffer(buffer);
+            using var contentBuffer = new PacketBuffer(buffer, clearBuffer);
             ReadMessage(contentBuffer);
             if (MessageFlags.HasFlag(MessageFlags.MediaMessage))
                 File = new ChannelMessageFile(contentBuffer, MessageFlags.HasFlag(MessageFlags.ExternalFile));
