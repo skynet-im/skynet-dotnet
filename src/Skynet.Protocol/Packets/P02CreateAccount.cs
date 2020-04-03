@@ -16,13 +16,13 @@ namespace Skynet.Protocol.Packets
         protected override void ReadPacketInternal(PacketBuffer buffer, PacketRole role)
         {
             AccountName = buffer.ReadShortString();
-            KeyHash = buffer.ReadRawByteArray(32).ToArray();
+            KeyHash = buffer.ReadByteArray(32);
         }
 
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteShortString(AccountName);
-            buffer.WriteRawByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash);
         }
 
         public override string ToString()

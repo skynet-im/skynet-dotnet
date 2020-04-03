@@ -21,9 +21,9 @@ namespace Skynet.Protocol.Packets
         protected override void ReadMessage(PacketBuffer buffer)
         {
             SignatureKeyFormat = (KeyFormat)buffer.ReadByte();
-            SignatureKey = buffer.ReadMediumByteArray().ToArray();
+            SignatureKey = buffer.ReadMediumByteArray();
             DerivationKeyFormat = (KeyFormat)buffer.ReadByte();
-            DerivationKey = buffer.ReadMediumByteArray().ToArray();
+            DerivationKey = buffer.ReadMediumByteArray();
         }
 
         protected override void WriteMessage(PacketBuffer buffer)
@@ -32,6 +32,14 @@ namespace Skynet.Protocol.Packets
             buffer.WriteMediumByteArray(SignatureKey);
             buffer.WriteByte((byte)DerivationKeyFormat);
             buffer.WriteMediumByteArray(DerivationKey);
+        }
+
+        protected override void DisposeMessage()
+        {
+            base.DisposeMessage();
+
+            Array.Clear(SignatureKey, 0, SignatureKey.Length);
+            Array.Clear(DerivationKey, 0, DerivationKey.Length);
         }
     }
 }

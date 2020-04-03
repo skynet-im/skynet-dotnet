@@ -4,8 +4,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>Skynet</RootNamespace>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>© 2017-2020 Daniel Lerch</Copyright>
-    <Version>5.2.0</Version>
+    <Version>5.2.1</Version>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <Authors>Daniel Lerch</Authors>
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>

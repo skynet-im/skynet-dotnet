@@ -22,7 +22,7 @@ namespace Skynet.Protocol.Packets
             StatusCode = (CreateSessionStatus)buffer.ReadByte();
             AccountId = buffer.ReadInt64();
             SessionId = buffer.ReadInt64();
-            SessionToken = buffer.ReadRawByteArray(32).ToArray();
+            SessionToken = buffer.ReadByteArray(32);
             WebToken = buffer.ReadMediumString();
         }
 
@@ -31,7 +31,7 @@ namespace Skynet.Protocol.Packets
             buffer.WriteByte((byte)StatusCode);
             buffer.WriteInt64(AccountId);
             buffer.WriteInt64(SessionId);
-            buffer.WriteRawByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken);
             buffer.WriteMediumString(WebToken);
         }
 
