@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,25 +26,34 @@ namespace Skynet.Network
         /// </summary>
         /// <exception cref="IOException">Failed to read from the underlying stream.</exception>
         /// <exception cref="ObjectDisposedException">The <see cref="PacketStream"/> has been disposed.</exception>
-        public async ValueTask<(bool success, byte id, ReadOnlyMemory<byte> buffer)> ReadAsync(CancellationToken ct = default)
+        public async ValueTask<(bool success, byte id, PoolableMemory buffer)> ReadAsync(CancellationToken ct = default)
         {
             if (disposedValue) throw new ObjectDisposedException(nameof(PacketStream));
 
-            byte[] buffer = new byte[4];
-            if (!await ReadInternal(buffer, ct).ConfigureAwait(false))
+            byte[] metaBuffer = new byte[4];
+            if (!await ReadInternal(metaBuffer, ct).ConfigureAwait(false))
                 return default;
-            uint packetMeta = BitConverter.ToUInt32(buffer);
+            uint packetMeta = BitConverter.ToUInt32(metaBuffer);
             if (!BitConverter.IsLittleEndian)
                 packetMeta = BinaryPrimitives.ReverseEndianness(packetMeta);
 
             byte id = (byte)(packetMeta & 0x000000FF);
             int length = (int)(packetMeta >> 8);
 
-            buffer = new byte[length];
-            if (!await ReadInternal(buffer, ct).ConfigureAwait(false))
-                return default;
+            // Use PacketBuffer with ArrayPool instead of allocating directly
+            PoolableMemory buffer = PoolableMemory.Allocate(length, true);
+            bool success = false;
+            try
+            {
+                if (!(success = await ReadInternal(buffer.Memory, ct).ConfigureAwait(false)))
+                    return default;
 
-            return (true, id, buffer);
+                return (true, id, buffer);
+            }
+            finally
+            {
+                if (!success) buffer.Return(false);
+            }
         }
 
         /// <summary>
@@ -56,28 +65,30 @@ namespace Skynet.Network
         public async ValueTask WriteAsync(byte id, ReadOnlyMemory<byte> buffer, CancellationToken ct = default)
         {
             if (disposedValue) throw new ObjectDisposedException(nameof(PacketStream));
-            if (buffer.Length > 0x00ffffff) throw new ArgumentOutOfRangeException(nameof(buffer), "The packet payload is too large");
+            if (buffer.Length > 0x00ffffff)
+                throw new ArgumentOutOfRangeException(nameof(buffer), "The packet payload is too large");
 
-            int writeBufferLength = sizeof(int) + buffer.Length;
-            byte[] cached = ArrayPool<byte>.Shared.Rent(writeBufferLength);
-            Memory<byte> writeBuffer = new Memory<byte>(cached, 0, writeBufferLength);
-
-            uint packetMeta = (uint)buffer.Length << 8 | id;
+            uint packetMeta = ((uint)buffer.Length << 8) | id;
             if (!BitConverter.IsLittleEndian)
                 packetMeta = BinaryPrimitives.ReverseEndianness(packetMeta);
 
-            BitConverter.TryWriteBytes(cached, packetMeta);
+            PoolableMemory memory = PoolableMemory.Allocate(sizeof(uint) + buffer.Length, true);
+            Unsafe.WriteUnaligned(ref memory.Memory.Span[0], packetMeta);
+            buffer.CopyTo(memory.Memory.Slice(sizeof(uint)));
 
-            buffer.CopyTo(writeBuffer.Slice(sizeof(int)));
-
-            await innerStream.WriteAsync(writeBuffer, ct).ConfigureAwait(false);
-
-            ArrayPool<byte>.Shared.Return(cached);
+            try
+            {
+                await innerStream.WriteAsync(memory.Memory, ct).ConfigureAwait(false);
+            }
+            finally
+            {
+                memory.Return(false);
+            }
         }
 
         private async ValueTask<bool> ReadInternal(Memory<byte> buffer, CancellationToken ct)
         {
-            if (buffer.Length == 0) 
+            if (buffer.Length == 0)
                 return true;
 
             int read = 0;

@@ -8,6 +8,13 @@ namespace Skynet.Protocol.Cryptography
     {
         private static readonly Aes aes = Aes.Create();
 
+        /// <summary>
+        /// Encrypts a message with a random IV and AES-256-CBC and computes its HMAC-SHA-256 digest.
+        /// The output order is HMAC (32 byte), IV (16 byte), ciphertext.
+        /// </summary>
+        /// <param name="plaintext"></param>
+        /// <param name="hmacKey">A 256 bit key for HMAC-SHA-256 message digest calculation.</param>
+        /// <param name="aesKey">A 256 bit key for AES-256-CBC encryption.</param>
         public static ReadOnlyMemory<byte> EncryptWithHmac(ReadOnlyMemory<byte> plaintext, byte[] hmacKey, byte[] aesKey)
         {
             if (hmacKey == null) throw new ArgumentNullException(nameof(hmacKey));
@@ -38,6 +45,12 @@ namespace Skynet.Protocol.Cryptography
             return ciphertext;
         }
 
+        /// <summary>
+        /// Decrypts a message using AES-256-CBC and verifies its HMAC-SHA-256 digest.
+        /// </summary>
+        /// <param name="ciphertext">A buffer containing an HMAC (32 byte), IV (16 byte) and at least one AES-encrypted block.</param>
+        /// <param name="hmacKey">A 256 bit key for HMAC-SHA-256 message digest calculation.</param>
+        /// <param name="aesKey">A 256 bit key for AES-256-CBC encryption.</param>
         public static ReadOnlyMemory<byte> DecryptWithHmac(ReadOnlyMemory<byte> ciphertext, byte[] hmacKey, byte[] aesKey)
         {
             if (hmacKey == null) throw new ArgumentNullException(nameof(hmacKey));

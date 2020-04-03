@@ -18,7 +18,7 @@ namespace Skynet.Tests.Network
             buffer.ReadBoolean();
             Assert.ThrowsException<EndOfStreamException>(() => buffer.ReadInt32());
             Assert.ThrowsException<EndOfStreamException>(() => buffer.ReadMediumByteArray());
-            Assert.ThrowsException<EndOfStreamException>(() => buffer.ReadRawByteArray(13));
+            Assert.ThrowsException<EndOfStreamException>(() => buffer.ReadByteArray(13));
         }
 
         [TestMethod]
@@ -26,8 +26,29 @@ namespace Skynet.Tests.Network
         {
             var buffer = new PacketBuffer(capacity: 4);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.Position = -1);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.Position = 5);
-            buffer.Position = 4;
+            buffer.Position = 500;
+            Assert.IsTrue(buffer.Capacity >= 500);
+        }
+
+        [TestMethod]
+        public void TestWriteSizeCheck()
+        {
+            byte[] empty = Array.Empty<byte>();
+            byte[] random1 = new byte[128];
+            byte[] random2 = new byte[3072];
+            byte[] random3 = new byte[262144];
+            Random gen = new Random();
+            gen.NextBytes(random1);
+            gen.NextBytes(random2);
+            gen.NextBytes(random3);
+
+            var write = new PacketBuffer();
+            write.WriteByteArray(empty);
+            write.WriteByteArray(random2);
+            write.WriteShortByteArray(random1);
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteShortByteArray(random2));
+            write.WriteMediumByteArray(random2);
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteMediumByteArray(random3));
         }
 
         [TestMethod]
@@ -48,13 +69,11 @@ namespace Skynet.Tests.Network
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteInt64(0x1a41a174a64c91aa));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteDateTime(default));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteUuid(default));
-            Assert.ThrowsException<InvalidOperationException>(() => read.WriteRawByteArray(bytes));
+            Assert.ThrowsException<InvalidOperationException>(() => read.WriteByteArray(bytes));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteShortByteArray(bytes));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteMediumByteArray(bytes));
-            Assert.ThrowsException<InvalidOperationException>(() => read.WriteLongByteArray(bytes));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteShortString(text));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteMediumString(text));
-            Assert.ThrowsException<InvalidOperationException>(() => read.WriteLongString(text));
         }
 
         [TestMethod]
@@ -119,20 +138,24 @@ namespace Skynet.Tests.Network
             gen.NextBytes(random3);
 
             var write = new PacketBuffer();
-            write.WriteRawByteArray(empty);
-            write.WriteRawByteArray(random2);
+            write.WriteByteArray(empty);
+            write.WriteByteArray(random1);
             write.WriteShortByteArray(random1);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteShortByteArray(random2));
             write.WriteMediumByteArray(random2);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteMediumByteArray(random3));
-            write.WriteLongByteArray(random3);
+            write.WriteMediumByteArray(random2);
+            write.WriteByteArray(random3);
 
             var read = new PacketBuffer(write.GetBuffer());
-            MemoryAssert.AreEqual(empty, read.ReadRawByteArray(0));
-            MemoryAssert.AreEqual(random2, read.ReadRawByteArray(random2.Length));
+            MemoryAssert.AreEqual(empty, read.ReadByteArray(0));
+            MemoryAssert.AreEqual(random1, read.ReadByteArray(random1.Length));
             MemoryAssert.AreEqual(random1, read.ReadShortByteArray());
             MemoryAssert.AreEqual(random2, read.ReadMediumByteArray());
-            MemoryAssert.AreEqual(random3, read.ReadLongByteArray());
+            PoolableMemory memory1 = read.ReadMediumPooledArray();
+            PoolableMemory memory2 = read.ReadPooledArray(random3.Length);
+            MemoryAssert.AreEqual(random2, memory1.Memory);
+            MemoryAssert.AreEqual(random3, memory2.Memory);
+            memory1.Return(false);
+            memory2.Return(false);
         }
 
         [TestMethod]
@@ -161,12 +184,10 @@ Dignissim convallis aenean et tortor at risus viverra adipiscing at.";
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteShortString(string2));
             write.WriteMediumString(string2);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteMediumString(string3));
-            write.WriteLongString(string3);
 
             var read = new PacketBuffer(write.GetBuffer());
             Assert.AreEqual(string1, read.ReadShortString());
             Assert.AreEqual(string2, read.ReadMediumString());
-            Assert.AreEqual(string3, read.ReadLongString());
         }
     }
 }

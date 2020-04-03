@@ -32,14 +32,15 @@ namespace Skynet.Tests.Network
             Assert.AreEqual(byte1, network[1]);
             Assert.AreEqual(byte2, network[2]);
             Assert.AreEqual(byte3, network[3]);
-            MemoryAssert.AreEqual<byte>(data, network.AsSpan().Slice(4));
+            MemoryAssert.AreEqual(data, network.AsSpan().Slice(4));
 
             source.Position = 0;
             await using var reader = new PacketStream(source, true);
-            (bool success, byte id, ReadOnlyMemory<byte> buffer) = await reader.ReadAsync().ConfigureAwait(false);
+            (bool success, byte id, PoolableMemory buffer) = await reader.ReadAsync().ConfigureAwait(false);
             Assert.IsTrue(success);
             Assert.AreEqual(0x7F, id);
-            MemoryAssert.AreEqual(data, buffer);
+            MemoryAssert.AreEqual(data, buffer.Memory);
+            buffer.Return(false);
         }
 
         [TestMethod]
@@ -58,8 +59,9 @@ namespace Skynet.Tests.Network
             using var target = new MemoryStream();
             await using var stream = new PacketStream(target, leaveInnerStreamOpen: true);
 
-            byte[] buffer = new byte[1 << 24];
-            await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(() => stream.WriteAsync(0xFF, buffer).AsTask()).ConfigureAwait(false);
+            byte[] data = new byte[1 << 24];
+            await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(
+                () => stream.WriteAsync(0xFF, data).AsTask()).ConfigureAwait(false);
         }
     }
 }
