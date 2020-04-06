@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>© 2018-2020 Daniel Lerch, Twometer and Beniox</Copyright>
-    <Version>5.2.1</Version>
+    <Version>5.2.2</Version>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <Authors>Daniel Lerch, Twometer, Beniox</Authors>
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
@@ -15,7 +15,7 @@ It contains packet abstraction, attributes and implementation as well as channel
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Skynet.Core" Version="5.2.1" />
+    <PackageReference Include="Skynet.Core" Version="5.2.2" />
     <ProjectReference Include="..\Skynet.Core\Skynet.Core.csproj" />
   </ItemGroup>
 

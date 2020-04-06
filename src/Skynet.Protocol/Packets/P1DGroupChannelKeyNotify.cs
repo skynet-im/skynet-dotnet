@@ -27,8 +27,8 @@ namespace Skynet.Protocol.Packets
         protected override void WriteMessage(PacketBuffer buffer)
         {
             buffer.WriteInt64(ChannelId);
-            buffer.WriteByteArray(NewKey);
-            buffer.WriteByteArray(HistoryKey);
+            buffer.WriteByteArray(NewKey, 64);
+            buffer.WriteByteArray(HistoryKey, 64);
         }
 
         protected override void DisposeMessage()

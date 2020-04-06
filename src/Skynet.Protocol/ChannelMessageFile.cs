@@ -55,7 +55,7 @@ namespace Skynet.Protocol
             {
                 buffer.WriteShortString(ContentType);
                 buffer.WriteInt64(Length);
-                buffer.WriteByteArray(Key);
+                buffer.WriteByteArray(Key, 32);
             }
         }
 

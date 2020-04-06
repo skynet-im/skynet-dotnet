@@ -25,8 +25,8 @@ namespace Skynet.Protocol.Packets
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteByteArray(PreviousKeyHash);
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(PreviousKeyHash, 32);
+            buffer.WriteByteArray(KeyHash, 32);
             buffer.WriteMediumByteArray(KeyHistory);
         }
     }

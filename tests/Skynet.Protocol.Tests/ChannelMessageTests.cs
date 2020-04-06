@@ -49,6 +49,26 @@ namespace Skynet.Protocol.Tests
             Assert.AreEqual(text, received.Text);
         }
 
+
+        [TestMethod]
+        public void TestPacketContentUnencrypted()
+        {
+            using var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted };
+
+            byte[] content = message.PacketContent;
+            Assert.IsNotNull(content);
+            using var buffer = new PacketBuffer(content);
+            Assert.AreEqual(text, buffer.ReadMediumString());
+        }
+
+        [TestMethod]
+        public void TestPacketContentEncrypted()
+        {
+            using var message = new FakeMessage { Text = text };
+
+            Assert.IsNull(message.PacketContent);
+        }
+
         private class FakeMessage : ChannelMessage
         {
             public FakeMessage()

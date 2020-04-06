@@ -21,7 +21,7 @@ namespace Skynet.Protocol.Packets
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteByteArray(Sha256);
+            buffer.WriteByteArray(Sha256, 32);
         }
     }
 }

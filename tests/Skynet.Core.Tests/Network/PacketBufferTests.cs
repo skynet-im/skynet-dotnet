@@ -11,7 +11,7 @@ namespace Skynet.Tests.Network
         [TestMethod]
         public void TestReadBoundry()
         {
-            var buffer = new PacketBuffer(new byte[16]);
+            using var buffer = new PacketBuffer(new byte[16]);
             buffer.ReadInt64();
             buffer.ReadInt32();
             buffer.ReadUInt16();
@@ -24,7 +24,7 @@ namespace Skynet.Tests.Network
         [TestMethod]
         public void TestPositionBoundry()
         {
-            var buffer = new PacketBuffer(capacity: 4);
+            using var buffer = new PacketBuffer(capacity: 4);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.Position = -1);
             buffer.Position = 500;
             Assert.IsTrue(buffer.Capacity >= 500);
@@ -42,9 +42,9 @@ namespace Skynet.Tests.Network
             gen.NextBytes(random2);
             gen.NextBytes(random3);
 
-            var write = new PacketBuffer();
-            write.WriteByteArray(empty);
-            write.WriteByteArray(random2);
+            using var write = new PacketBuffer();
+            write.WriteByteArray(empty, empty.Length);
+            write.WriteByteArray(random2, random2.Length);
             write.WriteShortByteArray(random1);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteShortByteArray(random2));
             write.WriteMediumByteArray(random2);
@@ -57,11 +57,11 @@ namespace Skynet.Tests.Network
             byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
             string text = "Hello World!";
 
-            var write = new PacketBuffer();
+            using var write = new PacketBuffer();
             write.WriteUInt16(0x3f7a);
             write.WriteDateTime(DateTime.Now);
 
-            var read = new PacketBuffer(write.GetBuffer());
+            using var read = new PacketBuffer(write.GetBuffer());
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteBoolean(true));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteByte(0x7f));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteUInt16(0x900a));
@@ -69,7 +69,7 @@ namespace Skynet.Tests.Network
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteInt64(0x1a41a174a64c91aa));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteDateTime(default));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteUuid(default));
-            Assert.ThrowsException<InvalidOperationException>(() => read.WriteByteArray(bytes));
+            Assert.ThrowsException<InvalidOperationException>(() => read.WriteByteArray(bytes, bytes.Length));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteShortByteArray(bytes));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteMediumByteArray(bytes));
             Assert.ThrowsException<InvalidOperationException>(() => read.WriteShortString(text));
@@ -79,7 +79,7 @@ namespace Skynet.Tests.Network
         [TestMethod]
         public void TestWriteExpansion()
         {
-            var buffer = new PacketBuffer(8);
+            using var buffer = new PacketBuffer(8);
             buffer.WriteInt32(-1);
             buffer.WriteBoolean(false);
             buffer.WriteByte(0xf3);
@@ -89,14 +89,14 @@ namespace Skynet.Tests.Network
         [TestMethod]
         public void TestPrimitives()
         {
-            var write = new PacketBuffer();
+            using var write = new PacketBuffer();
             write.WriteBoolean(true);
             write.WriteByte(0x7f);
             write.WriteUInt16(0x900a);
             write.WriteInt32(0x6502a14c);
             write.WriteInt64(0x1a41a174a64c91aa);
 
-            var read = new PacketBuffer(write.GetBuffer());
+            using var read = new PacketBuffer(write.GetBuffer());
             Assert.AreEqual(true, read.ReadBoolean());
             Assert.AreEqual(0x7f, read.ReadByte());
             Assert.AreEqual(0x900a, read.ReadUInt16());
@@ -112,13 +112,13 @@ namespace Skynet.Tests.Network
             Guid uuid1 = default;
             Guid uuid2 = Guid.NewGuid();
 
-            var write = new PacketBuffer();
+            using var write = new PacketBuffer();
             write.WriteDateTime(date1);
             write.WriteDateTime(date2);
             write.WriteUuid(uuid1);
             write.WriteUuid(uuid2);
 
-            var read = new PacketBuffer(write.GetBuffer());
+            using var read = new PacketBuffer(write.GetBuffer());
             Assert.AreEqual(date1, read.ReadDateTime());
             Assert.AreEqual(date2, read.ReadDateTime());
             Assert.AreEqual(uuid1, read.ReadUuid());
@@ -137,15 +137,15 @@ namespace Skynet.Tests.Network
             gen.NextBytes(random2);
             gen.NextBytes(random3);
 
-            var write = new PacketBuffer();
-            write.WriteByteArray(empty);
-            write.WriteByteArray(random1);
+            using var write = new PacketBuffer();
+            write.WriteByteArray(empty, empty.Length);
+            write.WriteByteArray(random1, random1.Length);
             write.WriteShortByteArray(random1);
             write.WriteMediumByteArray(random2);
             write.WriteMediumByteArray(random2);
-            write.WriteByteArray(random3);
+            write.WriteByteArray(random3, random3.Length);
 
-            var read = new PacketBuffer(write.GetBuffer());
+            using var read = new PacketBuffer(write.GetBuffer());
             MemoryAssert.AreEqual(empty, read.ReadByteArray(0));
             MemoryAssert.AreEqual(random1, read.ReadByteArray(random1.Length));
             MemoryAssert.AreEqual(random1, read.ReadShortByteArray());
@@ -179,15 +179,30 @@ Aliquam ultrices sagittis orci a. Dignissim diam quis enim lobortis. Aliquet por
 Dignissim convallis aenean et tortor at risus viverra adipiscing at.";
             string string3 = new string('A', 262144);
 
-            var write = new PacketBuffer();
+            using var write = new PacketBuffer();
             write.WriteShortString(string1);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteShortString(string2));
             write.WriteMediumString(string2);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => write.WriteMediumString(string3));
 
-            var read = new PacketBuffer(write.GetBuffer());
+            using var read = new PacketBuffer(write.GetBuffer());
             Assert.AreEqual(string1, read.ReadShortString());
             Assert.AreEqual(string2, read.ReadMediumString());
+        }
+
+        [TestMethod]
+        public void TestNullWrites()
+        {
+            using var write = new PacketBuffer();
+            write.WriteByteArray(null, 32);
+            write.WriteShortString(null);
+            write.WriteMediumString(null);
+
+            using var read = new PacketBuffer(write.GetBuffer());
+            ReadOnlySpan<byte> zeros = stackalloc byte[32];
+            MemoryAssert.AreEqual(zeros, read.ReadByteArray(32));
+            Assert.AreEqual(string.Empty, read.ReadShortString());
+            Assert.AreEqual(string.Empty, read.ReadMediumString());
         }
     }
 }
