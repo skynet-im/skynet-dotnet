@@ -293,7 +293,7 @@ namespace Skynet.Network
             uuid[13] = guid[13];
             uuid[14] = guid[14];
 
-            WriteByteArray(uuid);
+            WriteByteArray(uuid, 16);
         }
 
         #endregion
@@ -322,11 +322,25 @@ namespace Skynet.Network
             position += length;
             return value;
         }
-        public void WriteByteArray(ReadOnlySpan<byte> buffer)
+        /// <summary>
+        /// Writes a fixed length byte array.
+        /// </summary>
+        /// <param name="array">The data to write which must not exceed <paramref name="length"/>.</param>
+        /// <param name="length">The fixed length of this field.</param>
+        /// <exception cref="ArgumentException"><paramref name="array"/> is longer than <paramref name="length"/>.</exception>
+        public void WriteByteArray(ReadOnlySpan<byte> array, int length)
         {
-            PrepareWrite(buffer.Length);
-            buffer.CopyTo(this.buffer.Span.Slice(position));
-            position += buffer.Length;
+            if (array.Length > length) 
+                throw new ArgumentOutOfRangeException(nameof(array), array.Length, "The supplied data is longer than the field's fixed length.");
+            
+            PrepareWrite(length);
+            array.CopyTo(buffer.Span.Slice(position));
+
+            // We have to override the remaining memory with zero bytes because ArrayPool<byte> does not zero initialize arrays.
+            if (array.Length < length)
+                buffer.Span.Slice(position + array.Length, length - array.Length).Clear();
+
+            position += length;
         }
         public byte[] ReadShortByteArray()
         {

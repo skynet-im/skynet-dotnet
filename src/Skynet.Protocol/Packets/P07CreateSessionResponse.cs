@@ -31,7 +31,7 @@ namespace Skynet.Protocol.Packets
             buffer.WriteByte((byte)StatusCode);
             buffer.WriteInt64(AccountId);
             buffer.WriteInt64(SessionId);
-            buffer.WriteByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken, 32);
             buffer.WriteMediumString(WebToken);
         }
 

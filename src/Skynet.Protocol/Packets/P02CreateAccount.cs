@@ -22,7 +22,7 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteShortString(AccountName);
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash, 32);
         }
 
         public override string ToString()

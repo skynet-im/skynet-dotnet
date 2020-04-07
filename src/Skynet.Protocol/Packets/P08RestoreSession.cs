@@ -29,7 +29,7 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(SessionId);
-            buffer.WriteByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken, 32);
             buffer.WriteUInt16((ushort)Channels.Count);
             foreach (long channelId in Channels)
             {

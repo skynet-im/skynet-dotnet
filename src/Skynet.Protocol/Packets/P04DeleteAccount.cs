@@ -19,7 +19,7 @@ namespace Skynet.Protocol.Packets
 
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash, 32);
         }
     }
 }
