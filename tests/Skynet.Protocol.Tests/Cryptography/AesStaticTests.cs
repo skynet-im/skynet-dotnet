@@ -36,10 +36,10 @@ Dignissim convallis aenean et tortor at risus viverra adipiscing at.";
             byte[] hmacKey = new byte[32];
             byte[] aesKey = new byte[32];
 
-            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.EncryptWithHmac(buffer, null, aesKey));
-            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.EncryptWithHmac(buffer, hmacKey, null));
-            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.DecryptWithHmac(buffer, null, aesKey));
-            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.DecryptWithHmac(buffer, hmacKey, null));
+            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.EncryptWithHmac(buffer, null!, aesKey));
+            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.EncryptWithHmac(buffer, hmacKey, null!));
+            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.DecryptWithHmac(buffer, null!, aesKey));
+            Assert.ThrowsException<ArgumentNullException>(() => AesStatic.DecryptWithHmac(buffer, hmacKey, null!));
         }
 
         [TestMethod]

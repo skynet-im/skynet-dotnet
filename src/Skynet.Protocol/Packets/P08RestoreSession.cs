@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P08RestoreSession : Packet
     {
         public long SessionId { get; set; }
-        public byte[] SessionToken { get; set; }
+        public byte[]? SessionToken { get; set; }
         public long LastMessageId { get; set; }
         public List<long> Channels { get; set; } = new List<long>();
 

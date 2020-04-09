@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>© 2018-2020 Daniel Lerch, Twometer and Beniox</Copyright>
-    <Version>5.2.2</Version>
+    <Version>5.2.3</Version>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <Authors>Daniel Lerch, Twometer, Beniox</Authors>
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>

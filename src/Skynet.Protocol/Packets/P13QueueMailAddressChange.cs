@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
     public sealed class P13QueueMailAddressChange : ChannelMessage
     {
-        public string NewMailAddress { get; set; }
+        public string? NewMailAddress { get; set; }
 
         public override Packet Create() => new P13QueueMailAddressChange().Init(this);
 

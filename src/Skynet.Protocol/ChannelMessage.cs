@@ -37,7 +37,7 @@ namespace Skynet.Protocol
         }
 
         public long FileId { get; set; }
-        public ChannelMessageFile File { get; set; }
+        public ChannelMessageFile? File { get; set; }
         public List<Dependency> Dependencies { get; set; } = new List<Dependency>();
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Skynet.Protocol
         /// This property returns null if the message has to be encrypted first by calling <see cref="Encrypt(ReadOnlySpan{byte})"/>.
         /// </summary>
         /// <exception cref="ObjectDisposedException"/>
-        public byte[] PacketContent
+        public byte[]? PacketContent
         {
             get
             {
@@ -100,7 +100,10 @@ namespace Skynet.Protocol
         {
             if (!disposed)
             {
-                DisposeMessage();
+                contentBuffer?.Return(false);
+                File?.Dispose();
+                DisposeContents();
+
                 disposed = true;
             }
         }
@@ -174,12 +177,6 @@ namespace Skynet.Protocol
             }
         }
 
-        protected virtual void DisposeMessage()
-        {
-            contentBuffer?.Return(false);
-            File?.Dispose();
-        }
-
         protected ChannelMessage Init(ChannelMessage source)
         {
             Id = source.Id;
@@ -191,6 +188,7 @@ namespace Skynet.Protocol
 
         protected virtual void ReadMessage(PacketBuffer buffer) { }
         protected virtual void WriteMessage(PacketBuffer buffer) { }
+        protected virtual void DisposeContents() { }
 
         private void ReadContent(ReadOnlyMemory<byte> buffer, bool clearBuffer)
         {
@@ -202,6 +200,8 @@ namespace Skynet.Protocol
 
         private PoolableMemory WriteContent()
         {
+            if (File == null) throw new InvalidOperationException("You cannot write a message with MessageFlags.MediaMessage if File is null.");
+
             PacketBuffer contentBuffer = new PacketBuffer();
             WriteMessage(contentBuffer);
             if (messageFlags.HasFlag(MessageFlags.MediaMessage))

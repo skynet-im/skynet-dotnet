@@ -55,7 +55,7 @@ namespace Skynet.Protocol.Tests
         {
             using var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted };
 
-            byte[] content = message.PacketContent;
+            byte[]? content = message.PacketContent;
             Assert.IsNotNull(content);
             using var buffer = new PacketBuffer(content);
             Assert.AreEqual(text, buffer.ReadMediumString());
@@ -78,7 +78,7 @@ namespace Skynet.Protocol.Tests
                 AllowedFlags = MessageFlags.Unencrypted;
             }
 
-            public string Text { get; set; }
+            public string? Text { get; set; }
 
             public override Packet Create() => new FakeMessage();
 

@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [AllowedFlags(MessageFlags.Unencrypted | MessageFlags.MediaMessage | MessageFlags.ExternalFile)]
     public sealed class P27ProfileImage : ChannelMessage
     {
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
         public override Packet Create() => new P27ProfileImage().Init(this);
 
