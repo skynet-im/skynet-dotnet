@@ -200,12 +200,13 @@ namespace Skynet.Protocol
 
         private PoolableMemory WriteContent()
         {
-            if (File == null) throw new InvalidOperationException("You cannot write a message with MessageFlags.MediaMessage if File is null.");
+            if (messageFlags.HasFlag(MessageFlags.MediaMessage) && File == null)
+                throw new InvalidOperationException("You cannot write a message with MessageFlags.MediaMessage if File is null.");
 
             PacketBuffer contentBuffer = new PacketBuffer();
             WriteMessage(contentBuffer);
             if (messageFlags.HasFlag(MessageFlags.MediaMessage))
-                File.Write(contentBuffer, messageFlags.HasFlag(MessageFlags.ExternalFile));
+                File!.Write(contentBuffer, messageFlags.HasFlag(MessageFlags.ExternalFile));
             return contentBuffer.GetBufferAndDispose();
         }
 
