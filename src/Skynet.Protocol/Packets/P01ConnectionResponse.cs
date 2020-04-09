@@ -11,7 +11,7 @@ namespace Skynet.Protocol.Packets
     {
         public ConnectionState ConnectionState { get; set; }
         public int LatestVersionCode { get; set; }
-        public string LatestVersion { get; set; }
+        public string? LatestVersion { get; set; }
 
         public override Packet Create() => new P01ConnectionResponse().Init(this);
 

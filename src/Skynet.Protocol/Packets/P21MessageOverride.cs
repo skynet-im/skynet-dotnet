@@ -13,7 +13,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P21MessageOverride : ChannelMessage
     {
         public OverrideAction Action { get; set; }
-        public string NewText { get; set; }
+        public string? NewText { get; set; }
 
         public override Packet Create() => new P21MessageOverride().Init(this);
 

@@ -13,7 +13,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P24DaystreamMessage : ChannelMessage
     {
         public MessageType MessageType { get; set; }
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         public override Packet Create() => new P24DaystreamMessage().Init(this);
 

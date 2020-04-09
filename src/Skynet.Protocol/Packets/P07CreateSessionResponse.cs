@@ -12,8 +12,8 @@ namespace Skynet.Protocol.Packets
         public CreateSessionStatus StatusCode { get; set; }
         public long AccountId { get; set; }
         public long SessionId { get; set; }
-        public byte[] SessionToken { get; set; }
-        public string WebToken { get; set; }
+        public byte[]? SessionToken { get; set; }
+        public string? WebToken { get; set; }
 
         public override Packet Create() => new P07CreateSessionResponse().Init(this);
 

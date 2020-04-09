@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [AllowedFlags(MessageFlags.Unencrypted)]
     public sealed class P26Bio : ChannelMessage
     {
-        public string Bio { get; set; }
+        public string? Bio { get; set; }
 
         public override Packet Create() => new P26Bio().Init(this);
 

@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Unencrypted)]
     public sealed class P14MailAddress : ChannelMessage
     {
-        public string MailAddress { get; set; }
+        public string? MailAddress { get; set; }
 
         public override Packet Create() => new P14MailAddress().Init(this);
 
