@@ -42,3 +42,20 @@ steps:
     command: test
     projects: '**/*Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: Pack
+  condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
+  inputs:
+    command: pack
+    searchPatternPack: '**/*.csproj;!**/*.Tests.csproj'
+    includesymbols: true
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+- task: DotNetCoreCLI@2
+  displayName: Push
+  condition: and(succeeded(), eq(variables['build.sourcebranch'], 'refs/heads/master'))
+  inputs:
+    command: push
+    searchPatternPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    arguments: '--skip-duplicate'
+    nugetFeedType: 'external'
+    externalEndpoint: 'BaGet'

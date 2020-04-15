@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>© 2017-2020 Daniel Lerch</Copyright>
-    <Version>5.2.2</Version>
+    <Version>5.2.4</Version>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <Authors>Daniel Lerch</Authors>
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
