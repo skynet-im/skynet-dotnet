@@ -50,7 +50,7 @@ namespace Skynet.Network
             {
                 ArrayPool<byte>.Shared.Return(RentedBuffer, clearMemory);
             }
-            else
+            else if (clearMemory)
             {
                 Memory.Span.Clear();
             }

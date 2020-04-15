@@ -15,17 +15,28 @@ namespace Skynet.Protocol.Tests
         [TestMethod]
         public void TestUnencrypted()
         {
-            using var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted };
             using var buffer = new PacketBuffer();
 
-            message.WritePacket(buffer, PacketRole.Client);
-            
+            using (var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted })
+            {
+                message.WritePacket(buffer, PacketRole.Client);
+            }
+
             buffer.Position = 0;
+            byte[]? content;
 
-            using var received = new FakeMessage();
-            received.ReadPacket(buffer, PacketRole.Server);
+            using (var received = new FakeMessage())
+            {
+                received.ReadPacket(buffer, PacketRole.Server);
+                content = received.PacketContent;
+                
+                Assert.AreEqual(text, received.Text);
+            }
 
-            Assert.AreEqual(text, received.Text);
+            // Reading a packet must not alter its contents
+            Assert.IsNotNull(content);
+            using var contentBuffer = new PacketBuffer(content);
+            Assert.AreEqual(text, contentBuffer.ReadMediumString());
         }
 
         [TestMethod]
@@ -53,9 +64,10 @@ namespace Skynet.Protocol.Tests
         [TestMethod]
         public void TestPacketContentUnencrypted()
         {
-            using var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted };
+            byte[]? content;
+            using (var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted })
+                content = message.PacketContent;
 
-            byte[]? content = message.PacketContent;
             Assert.IsNotNull(content);
             using var buffer = new PacketBuffer(content);
             Assert.AreEqual(text, buffer.ReadMediumString());
