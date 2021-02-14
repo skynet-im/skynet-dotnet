@@ -12,9 +12,9 @@ namespace Skynet.Protocol.Packets
     public sealed class P17PrivateKeys : ChannelMessage
     {
         public KeyFormat SignatureKeyFormat { get; set; }
-        public byte[] SignatureKey { get; set; }
+        public byte[]? SignatureKey { get; set; }
         public KeyFormat DerivationKeyFormat { get; set; }
-        public byte[] DerivationKey { get; set; }
+        public byte[]? DerivationKey { get; set; }
 
         public override Packet Create() => new P17PrivateKeys().Init(this);
 
@@ -34,12 +34,10 @@ namespace Skynet.Protocol.Packets
             buffer.WriteMediumByteArray(DerivationKey);
         }
 
-        protected override void DisposeMessage()
+        protected override void DisposeContents()
         {
-            base.DisposeMessage();
-
-            Array.Clear(SignatureKey, 0, SignatureKey.Length);
-            Array.Clear(DerivationKey, 0, DerivationKey.Length);
+            SignatureKey.AsSpan().Clear();
+            DerivationKey.AsSpan().Clear();
         }
     }
 }

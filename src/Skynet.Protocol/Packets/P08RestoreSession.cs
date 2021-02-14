@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P08RestoreSession : Packet
     {
         public long SessionId { get; set; }
-        public byte[] SessionToken { get; set; }
+        public byte[]? SessionToken { get; set; }
         public long LastMessageId { get; set; }
         public List<long> Channels { get; set; } = new List<long>();
 
@@ -19,6 +19,8 @@ namespace Skynet.Protocol.Packets
         {
             SessionId = buffer.ReadInt64();
             SessionToken = buffer.ReadByteArray(32);
+            LastMessageId = buffer.ReadInt64();
+
             ushort length = buffer.ReadUInt16();
             for (int i = 0; i < length; i++)
             {
@@ -29,7 +31,9 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteInt64(SessionId);
-            buffer.WriteByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken, 32);
+            buffer.WriteInt64(LastMessageId);
+
             buffer.WriteUInt16((ushort)Channels.Count);
             foreach (long channelId in Channels)
             {

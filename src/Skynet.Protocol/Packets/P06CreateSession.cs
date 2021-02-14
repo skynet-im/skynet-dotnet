@@ -8,9 +8,9 @@ namespace Skynet.Protocol.Packets
     [Packet(0x06, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated)]
     public sealed class P06CreateSession : Packet
     {
-        public string AccountName { get; set; }
-        public byte[] KeyHash { get; set; }
-        public string FcmRegistrationToken { get; set; }
+        public string? AccountName { get; set; }
+        public byte[]? KeyHash { get; set; }
+        public string? FcmRegistrationToken { get; set; }
 
         public override Packet Create() => new P06CreateSession().Init(this);
 
@@ -24,7 +24,7 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteShortString(AccountName);
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash, 32);
             buffer.WriteMediumString(FcmRegistrationToken);
         }
 

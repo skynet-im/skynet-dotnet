@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [AllowedFlags(MessageFlags.Unencrypted)]
     public sealed class P25Nickname : ChannelMessage
     {
-        public string Nickname { get; set; }
+        public string? Nickname { get; set; }
 
         public override Packet Create() => new P25Nickname().Init(this);
 

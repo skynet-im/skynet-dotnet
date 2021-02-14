@@ -8,8 +8,8 @@ namespace Skynet.Protocol.Packets
     [Packet(0x02, PacketPolicies.ClientToServer | PacketPolicies.Unauthenticated)]
     public sealed class P02CreateAccount : Packet
     {
-        public string AccountName { get; set; }
-        public byte[] KeyHash { get; set; }
+        public string? AccountName { get; set; }
+        public byte[]? KeyHash { get; set; }
 
         public override Packet Create() => new P02CreateAccount().Init(this);
 
@@ -22,7 +22,7 @@ namespace Skynet.Protocol.Packets
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
             buffer.WriteShortString(AccountName);
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash, 32);
         }
 
         public override string ToString()

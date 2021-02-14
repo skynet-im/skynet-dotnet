@@ -10,7 +10,7 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Loopback)]
     public sealed class P1AVerifiedKeys : ChannelMessage
     {
-        public byte[] Sha256 { get; set; }
+        public byte[]? Sha256 { get; set; }
 
         public override Packet Create() => new P1AVerifiedKeys().Init(this);
 
@@ -21,7 +21,7 @@ namespace Skynet.Protocol.Packets
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteByteArray(Sha256);
+            buffer.WriteByteArray(Sha256, 32);
         }
     }
 }

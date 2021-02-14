@@ -12,8 +12,8 @@ namespace Skynet.Protocol.Packets
     public sealed class P1DGroupChannelKeyNotify : ChannelMessage
     {
         public long GroupChannelId { get; set; }
-        public byte[] NewKey { get; set; }
-        public byte[] HistoryKey { get; set; }
+        public byte[]? NewKey { get; set; }
+        public byte[]? HistoryKey { get; set; }
 
         public override Packet Create() => new P1DGroupChannelKeyNotify().Init(this);
 
@@ -27,16 +27,14 @@ namespace Skynet.Protocol.Packets
         protected override void WriteMessage(PacketBuffer buffer)
         {
             buffer.WriteInt64(ChannelId);
-            buffer.WriteByteArray(NewKey);
-            buffer.WriteByteArray(HistoryKey);
+            buffer.WriteByteArray(NewKey, 64);
+            buffer.WriteByteArray(HistoryKey, 64);
         }
 
-        protected override void DisposeMessage()
+        protected override void DisposeContents()
         {
-            base.DisposeMessage();
-
-            Array.Clear(NewKey, 0, NewKey.Length);
-            Array.Clear(HistoryKey, 0, HistoryKey.Length);
+            NewKey.AsSpan().Clear();
+            HistoryKey.AsSpan().Clear();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Skynet.Protocol
     {
         private bool disposed;
         private PoolableMemory thumbnailData;
-        private byte[] key;
+        private byte[]? key;
 
         public string Name { get; set; }
         public DateTime CreationTime { get; set; }
@@ -19,9 +19,9 @@ namespace Skynet.Protocol
             get { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); return thumbnailData; }
             set { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); thumbnailData = value; }
         }
-        public string ContentType { get; set; }
+        public string? ContentType { get; set; }
         public long Length { get; set; }
-        public byte[] Key
+        public byte[]? Key
         {
             get { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); return key; }
             set { if (disposed) throw new ObjectDisposedException(nameof(ChannelMessageFile)); key = value; }
@@ -33,13 +33,13 @@ namespace Skynet.Protocol
             CreationTime = buffer.ReadDateTime();
             LastWriteTime = buffer.ReadDateTime();
             ThumbnailContentType = buffer.ReadShortString();
-            ThumbnailData = buffer.ReadMediumPooledArray();
+            thumbnailData = buffer.ReadMediumPooledArray();
 
             if (external)
             {
                 ContentType = buffer.ReadShortString();
                 Length = buffer.ReadInt64();
-                Key = buffer.ReadByteArray(32);
+                key = buffer.ReadByteArray(32);
             }
         }
 
@@ -55,7 +55,7 @@ namespace Skynet.Protocol
             {
                 buffer.WriteShortString(ContentType);
                 buffer.WriteInt64(Length);
-                buffer.WriteByteArray(Key);
+                buffer.WriteByteArray(Key, 32);
             }
         }
 
@@ -63,8 +63,8 @@ namespace Skynet.Protocol
         {
             if (!disposed)
             {
-                ThumbnailData.Return(true);
-                Array.Clear(Key, 0, Key.Length);
+                thumbnailData.Return(true);
+                key.AsSpan().Clear();
 
                 disposed = true;
             }

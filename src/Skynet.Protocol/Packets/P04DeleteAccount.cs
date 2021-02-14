@@ -8,7 +8,7 @@ namespace Skynet.Protocol.Packets
     [Packet(0x04, PacketPolicies.ClientToServer)]
     public sealed class P04DeleteAccount : Packet
     {
-        public byte[] KeyHash { get; set; }
+        public byte[]? KeyHash { get; set; }
 
         public override Packet Create() => new P04DeleteAccount().Init(this);
 
@@ -19,7 +19,7 @@ namespace Skynet.Protocol.Packets
 
         protected override void WritePacketInternal(PacketBuffer buffer, PacketRole role)
         {
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(KeyHash, 32);
         }
     }
 }

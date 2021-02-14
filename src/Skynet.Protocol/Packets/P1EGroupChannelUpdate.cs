@@ -12,7 +12,7 @@ namespace Skynet.Protocol.Packets
     {
         public long GroupRevision { get; set; }
         public List<(long AccountId, GroupMemberFlags Flags)> Members { get; set; } = new List<(long AccountId, GroupMemberFlags Flags)>();
-        public byte[] KeyHistory { get; set; }
+        public byte[]? KeyHistory { get; set; }
 
         public override Packet Create() => new P1EGroupChannelUpdate().Init(this);
 

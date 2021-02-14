@@ -15,17 +15,28 @@ namespace Skynet.Protocol.Tests
         [TestMethod]
         public void TestUnencrypted()
         {
-            using var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted };
             using var buffer = new PacketBuffer();
 
-            message.WritePacket(buffer, PacketRole.Client);
-            
+            using (var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted })
+            {
+                message.WritePacket(buffer, PacketRole.Client);
+            }
+
             buffer.Position = 0;
+            byte[]? content;
 
-            using var received = new FakeMessage();
-            received.ReadPacket(buffer, PacketRole.Server);
+            using (var received = new FakeMessage())
+            {
+                received.ReadPacket(buffer, PacketRole.Server);
+                content = received.PacketContent;
+                
+                Assert.AreEqual(text, received.Text);
+            }
 
-            Assert.AreEqual(text, received.Text);
+            // Reading a packet must not alter its contents
+            Assert.IsNotNull(content);
+            using var contentBuffer = new PacketBuffer(content);
+            Assert.AreEqual(text, contentBuffer.ReadMediumString());
         }
 
         [TestMethod]
@@ -49,6 +60,27 @@ namespace Skynet.Protocol.Tests
             Assert.AreEqual(text, received.Text);
         }
 
+
+        [TestMethod]
+        public void TestPacketContentUnencrypted()
+        {
+            byte[]? content;
+            using (var message = new FakeMessage { Text = text, MessageFlags = MessageFlags.Unencrypted })
+                content = message.PacketContent;
+
+            Assert.IsNotNull(content);
+            using var buffer = new PacketBuffer(content);
+            Assert.AreEqual(text, buffer.ReadMediumString());
+        }
+
+        [TestMethod]
+        public void TestPacketContentEncrypted()
+        {
+            using var message = new FakeMessage { Text = text };
+
+            Assert.IsNull(message.PacketContent);
+        }
+
         private class FakeMessage : ChannelMessage
         {
             public FakeMessage()
@@ -58,7 +90,7 @@ namespace Skynet.Protocol.Tests
                 AllowedFlags = MessageFlags.Unencrypted;
             }
 
-            public string Text { get; set; }
+            public string? Text { get; set; }
 
             public override Packet Create() => new FakeMessage();
 

@@ -13,7 +13,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P20ChatMessage : ChannelMessage
     {
         public MessageType MessageType { get; set; }
-        public string Text { get; set; }
+        public string? Text { get; set; }
         public long QuotedMessageId { get; set; }
 
         public override Packet Create() => new P20ChatMessage().Init(this);

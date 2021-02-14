@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Copyright>© 2018-2020 Daniel Lerch, Twometer and Beniox</Copyright>
-    <Version>5.2.1</Version>
+    <Version>5.2.4</Version>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <Authors>Daniel Lerch, Twometer, Beniox</Authors>
     <RepositoryUrl>https://github.com/skynet-im/skynet-dotnet</RepositoryUrl>
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Skynet.Core" Version="5.2.1" />
+    <PackageReference Include="Skynet.Core" Version="5.2.4" />
     <ProjectReference Include="..\Skynet.Core\Skynet.Core.csproj" />
   </ItemGroup>
 

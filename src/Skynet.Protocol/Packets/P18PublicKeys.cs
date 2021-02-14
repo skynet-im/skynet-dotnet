@@ -12,9 +12,9 @@ namespace Skynet.Protocol.Packets
     public sealed class P18PublicKeys : ChannelMessage
     {
         public KeyFormat SignatureKeyFormat { get; set; }
-        public byte[] SignatureKey { get; set; }
+        public byte[]? SignatureKey { get; set; }
         public KeyFormat DerivationKeyFormat { get; set; }
-        public byte[] DerivationKey { get; set; }
+        public byte[]? DerivationKey { get; set; }
 
         public override Packet Create() => new P18PublicKeys().Init(this);
 

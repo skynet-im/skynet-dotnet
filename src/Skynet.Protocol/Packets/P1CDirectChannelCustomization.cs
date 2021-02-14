@@ -11,7 +11,7 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Loopback)]
     public sealed class P1CDirectChannelCustomization : ChannelMessage
     {
-        public string CustomNickname { get; set; }
+        public string? CustomNickname { get; set; }
         public ImageShape ProfileImageShape { get; set; }
         
         public override Packet Create() => new P1CDirectChannelCustomization().Init(this);

@@ -12,8 +12,8 @@ namespace Skynet.Protocol.Packets
         public CreateSessionStatus StatusCode { get; set; }
         public long AccountId { get; set; }
         public long SessionId { get; set; }
-        public byte[] SessionToken { get; set; }
-        public string WebToken { get; set; }
+        public byte[]? SessionToken { get; set; }
+        public string? WebToken { get; set; }
 
         public override Packet Create() => new P07CreateSessionResponse().Init(this);
 
@@ -31,7 +31,7 @@ namespace Skynet.Protocol.Packets
             buffer.WriteByte((byte)StatusCode);
             buffer.WriteInt64(AccountId);
             buffer.WriteInt64(SessionId);
-            buffer.WriteByteArray(SessionToken);
+            buffer.WriteByteArray(SessionToken, 32);
             buffer.WriteMediumString(WebToken);
         }
 

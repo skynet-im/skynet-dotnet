@@ -14,15 +14,16 @@ pool:
   vmImage: 'ubuntu-18.04'
 
 variables:
-  buildConfiguration: 'Release'
+  BuildConfiguration: 'Release'
+  ApiKey: $(NugetApiKey)
 
 steps:
-- task: UseDotNet@2
-  displayName: "Use .NET Core 3.1 SDK"
-  inputs:
-    packageType: sdk
-    version: 3.1.x
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+#- task: UseDotNet@2
+#  displayName: "Use .NET Core 3.1 SDK"
+#  inputs:
+#    packageType: sdk
+#    version: 3.1.x
+#    installationPath: $(Agent.ToolsDirectory)/dotnet
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
@@ -35,10 +36,30 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration)'
 - task: DotNetCoreCLI@2
   displayName: Test
   inputs:
     command: test
     projects: '**/*Tests.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(BuildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: Pack
+  condition: eq(variables['build.sourcebranch'], 'refs/heads/master')
+  inputs:
+    command: pack
+    searchPatternPack: '**/*.csproj;!**/*.Tests.csproj'
+    includesymbols: true
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+# Workaround for https://github.com/microsoft/azure-pipelines-tasks/issues/7160
+- task: DotNetCoreCLI@2
+  displayName: Push
+  condition: and(succeeded(), eq(variables['build.sourcebranch'], 'refs/heads/master'))
+  inputs:
+    command: custom
+    custom: nuget
+    arguments: >
+      push $(Build.ArtifactStagingDirectory)/*.nupkg
+      -s https://lerchen.net/nuget/v3/index.json
+      -k $(ApiKey)
+      --skip-duplicate

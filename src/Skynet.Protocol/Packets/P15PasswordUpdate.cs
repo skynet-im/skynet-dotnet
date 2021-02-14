@@ -10,9 +10,9 @@ namespace Skynet.Protocol.Packets
     [MessageFlags(MessageFlags.Loopback | MessageFlags.Unencrypted)]
     public sealed class P15PasswordUpdate : ChannelMessage
     {
-        public byte[] PreviousKeyHash { get; set; }
-        public byte[] KeyHash { get; set; }
-        public byte[] KeyHistory { get; set; }
+        public byte[]? PreviousKeyHash { get; set; }
+        public byte[]? KeyHash { get; set; }
+        public byte[]? KeyHistory { get; set; }
 
         public override Packet Create() => new P15PasswordUpdate().Init(this);
 
@@ -25,8 +25,8 @@ namespace Skynet.Protocol.Packets
 
         protected override void WriteMessage(PacketBuffer buffer)
         {
-            buffer.WriteByteArray(PreviousKeyHash);
-            buffer.WriteByteArray(KeyHash);
+            buffer.WriteByteArray(PreviousKeyHash, 32);
+            buffer.WriteByteArray(KeyHash, 32);
             buffer.WriteMediumByteArray(KeyHistory);
         }
     }

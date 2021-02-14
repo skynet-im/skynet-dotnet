@@ -9,7 +9,7 @@ namespace Skynet.Protocol.Packets
     public sealed class P00ConnectionHandshake : Packet
     {
         public int ProtocolVersion { get; set; }
-        public string ApplicationIdentifier { get; set; }
+        public string? ApplicationIdentifier { get; set; }
         public int VersionCode { get; set; }
 
         public override Packet Create() => new P00ConnectionHandshake().Init(this);
